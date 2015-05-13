@@ -1,0 +1,27 @@
+{
+  "name": "rainet",
+  "version": "1.0.0",
+  "description": "A JavaScript implementation of 5pb.'s game RaiNet Access Battlers.",
+  "main": "src-es5/rainet.js",
+  "scripts": {
+    "test": "mocha lib/test",
+    "compile": "node compile.js",
+    "cp": "npm run compile && npm run publish"
+  },
+  "author": "Sean Genabe <seangenabe@outlook.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.10",
+    "npm": ">=2"
+  },
+  "dependencies": {
+    "make-error": "^0.3.0",
+    "symbol-enum": "^1.0.0"
+  },
+  "devDependencies": {
+    "chai": "^1.9.2",
+    "mocha": "^2.0.1",
+    "traceur": "0.0.72",
+    "mkdirp": "^0.5.0"
+  }
+}
