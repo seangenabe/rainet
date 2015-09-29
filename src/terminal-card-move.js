@@ -14,14 +14,13 @@ var TerminalCardType = require('./terminal-card-type')
 class TerminalCardMove extends Move {
 
   constructor(opts) {
+    super(opts)
 
     var {cardType} = opts
 
     assert(typeof(TerminalCardType[cardType]) === 'string', "Invalid argument: opts.cardType")
 
     this._cardType = cardType
-
-    super(opts)
   }
 
   /**

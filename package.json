@@ -5,8 +5,8 @@
   "main": "src-es5/rainet.js",
   "scripts": {
     "test": "mocha lib/test",
-    "compile": "node compile.js",
-    "cp": "npm run compile && npm run publish"
+    "compile": "babel src --out-dir src-es5 --optional runtime --stage 0",
+    "watch": "npm run compile -- --watch"
   },
   "author": "Sean Genabe <seangenabe@outlook.com>",
   "license": "MIT",
@@ -15,13 +15,16 @@
     "npm": ">=2"
   },
   "dependencies": {
+    "babel-runtime": "^5.8.25",
     "make-error": "^0.3.0",
-    "symbol-enum": "^1.0.0"
+    "symbol-enum": "^3.2.2-0"
   },
   "devDependencies": {
+    "babel": "^5.8.23",
     "chai": "^1.9.2",
+    "mkdirp": "^0.5.0",
     "mocha": "^2.0.1",
-    "traceur": "0.0.72",
-    "mkdirp": "^0.5.0"
-  }
+    "traceur": "0.0.72"
+  },
+  "private": "true"
 }

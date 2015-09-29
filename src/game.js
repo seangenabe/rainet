@@ -87,8 +87,8 @@ class Game {
         throw new InvalidMoveError("It is not the turn of the player of the specified move.")
     }
 
-    var currentSquare = move.source
-    var card = currentSquare.card
+    var currentSquare = move.source // can be null when move.uninstall === true
+    var card = currentSquare ? currentSquare.card : null;
 
     // Check if the card moved is an online card.
     if (move instanceof OnlineCardMove) {
@@ -139,27 +139,21 @@ class Game {
         // Check if the card moved is a Line Boost card.
         if (move.cardType === TerminalCardType.lineBoost) {
 
-          // Require the owner's card in the specified square.
-          this._requireTeamCardOnSquare(currentSquare, team)
-
           if (move.uninstall) {
 
-            // Make sure the card on the square has line boost installed.
-            if (!card.lineBoosted)
-              throw new Error("Invalid game state.")
+            card = this.state.lineBoostLocation[team].card
 
             // Uninstall line boost.
             this._uninstallLineBoostCore(team, card)
           }
           else {
 
+            // Require the owner's card in the specified square.
+            this._requireTeamCardOnSquare(currentSquare, team)
+
             // Check if the square is given.
             if (currentSquare == null)
               throw new InvalidMoveError("Source square not specified.")
-
-            // Check if the square matches the line boost current location.
-            if (currentSquare !== this.state.lineBoostLocation[team])
-              throw new InvalidMoveError("Line Boost is not in the provided square.")
 
             // Make sure the card on the square has line boost uninstalled.
             if (card.lineBoosted)
@@ -177,13 +171,8 @@ class Game {
 
           if (move.uninstall) {
 
-            // Make sure the square has firewall installed.
-            if (currentSquare.firewall == null) {
-              throw new Error("Invalid game state.")
-            }
-
             // Uninstall firewall.
-            currentSquare.firewall = null
+            this.state.firewallLocation[team].firewall = null
             this.state.firewallLocation[team] = null
             this.state.terminalCardState[team][TerminalCardType.firewall] = false
           }
@@ -196,8 +185,8 @@ class Game {
 
             // Install firewall.
             currentSquare.firewall = team
-            this.state.firewallLocation.set(team, currentSquare)
-            this.state.terminalCardState.get(team).set(TerminalCardType.firewall, true)
+            this.state.firewallLocation[team] = currentSquare
+            this.state.terminalCardState[team][TerminalCardType.firewall] = true
           }
         }
         else {
@@ -458,6 +447,8 @@ class Game {
     // Move the card.
     move.destinationSquare.card = card
     source.card = null
+    // Update line boost location.
+    this.state.lineBoostLocation[team] = move.destinationSquare
 
     return ret
   }
@@ -469,7 +460,7 @@ class Game {
    * @param {Card} card
    */
   _uninstallLineBoostCore(team, card) {
-    this.state.terminalCardState[team][TerminalCardType.lineBoost] = null
+    this.state.terminalCardState[team][TerminalCardType.lineBoost] = false
     this.state.lineBoostLocation[team] = null
     card.lineBoosted = false
   }

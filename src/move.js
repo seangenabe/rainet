@@ -22,12 +22,9 @@ class Move {
     assert(typeof(opts) === 'object', "Invalid argument: opts")
     var team = opts.team, source = opts.source
     assert(typeof(Team[team]) === 'string', "Invalid argument: opts.team")
-    assert(source instanceof Square, "Invalid argument: opts.source")
 
     this._source = source
     this._team = team
-
-    Object.freeze(this)
   }
 
   /**

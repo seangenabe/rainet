@@ -11,10 +11,9 @@ var TerminalCardMove = require('./terminal-card-move')
 class InstallableTerminalCardMove extends TerminalCardMove {
 
   constructor(opts) {
+    super(opts)
 
     this._uninstall = !!opts.uninstall
-
-    super(opts)
   }
 
   /** Whether to uninstall the terminal card instead of installing it.

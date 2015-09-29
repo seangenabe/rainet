@@ -18,6 +18,7 @@ const directions = values(Direction)
 class OnlineCardMove extends Move {
 
   constructor(opts) {
+    super(opts)
 
     var direction = opts.direction, direction2 = opts.direction2, revealCard = opts.revealCard
 
@@ -29,8 +30,6 @@ class OnlineCardMove extends Move {
     this._direction = direction
     this._direction2 = direction2
     this._revealCard = revealCard
-
-    super(opts)
   }
 
   /**
