@@ -12,7 +12,7 @@ describe('Direction', function() {
       expect(Direction[Direction.down]).to.be.equal('down')
       expect(Direction[Direction.left]).to.be.equal('left')
       expect(Direction[Direction.right]).to.be.equal('right')
-      expect(Object.keys(Direction)).to.have.members(['right', 'down', 'up', 'left'])
+      expect(Array.keys(Direction.keys())).to.have.members(['right', 'down', 'up', 'left'])
     })
 
   })
