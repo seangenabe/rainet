@@ -183,6 +183,11 @@ class Game {
               throw new InvalidMoveError("Cannot install firewall on a square occupied by an enemy card.")
             }
 
+            // Check if enemy firewall is installed.
+            if (currentSquare.firewall != null) {
+              throw new InvalidMoveError("Cannot install firewall on a square where enemy firewall is installed.")
+            }
+
             // Install firewall.
             currentSquare.firewall = team
             this.state.firewallLocation[team] = currentSquare
@@ -236,7 +241,7 @@ class Game {
       else if (move instanceof TerminalCardMove) {
 
         // Check if the card is a Virus Checker card.
-        if (tmove.cardType === TerminalCardType.virusCheck) {
+        if (move.cardType === TerminalCardType.virusCheck) {
 
           // Check if the card is not consumed.
           if (this.state.terminalCardState[team][TerminalCardType.virusCheck]) {
