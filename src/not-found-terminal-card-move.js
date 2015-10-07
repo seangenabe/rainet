@@ -14,7 +14,7 @@ var Square = require('./square')
 class NotFoundTerminalCardMove extends TerminalCardMove {
 
   constructor(opts) {
-    super(args)
+    super(opts)
 
     var {other, swap} = opts
 
