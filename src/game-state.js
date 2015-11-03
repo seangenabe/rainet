@@ -204,6 +204,10 @@ class GameState {
     }
     return null
   }
+
+  get winnerBySurrender() { return this._winnerBySurrender }
+  set winnerBySurrender(value) { this._winnerBySurrender = value }
+  
 }
 
 /**

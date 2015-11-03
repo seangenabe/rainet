@@ -8,6 +8,7 @@ var TerminalCardMove = require('./terminal-card-move')
 var StackedOnlineCard = require('./stacked-online-card')
 var InstallableTerminalCardMove = require('./installable-terminal-card-move')
 var NotFoundTerminalCardMove = require('./not-found-terminal-card-move')
+var SurrenderMove = require('./surrender-move')
 var TerminalCardType = require('./terminal-card-type')
 var Team = require('./team')
 var Square = require('./square')
@@ -74,6 +75,15 @@ class Game {
       throw new Error("Game has not been initialized.")
     if (this.state.winner != null)
       throw new Error("Game has already ended.")
+
+    // Check for a surrender move (a team can surrender at any time)
+    if (move instanceof SurrenderMove) {
+      let winnerBySurrender = getEnemyTeam(move.team)
+      this.state.winnerBySurrender = winnerBySurrender
+      // Add move to move history.
+      this.state.moves.push(move)
+      return { winner: winnerBySurrender }
+    }
 
     // Check if it's the specified team's turn.
     var team = this.state.turn
