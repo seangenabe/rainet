@@ -65,6 +65,9 @@ module.exports = class Game {
    */
   submitMove(move) {
 
+    let { state } = this
+    let { terminalCardState } = state
+
     if (!(move instanceof Move)) {
       throw new TypeError("move must be a Move")
     }
@@ -76,21 +79,21 @@ module.exports = class Game {
       throw new Error("Game has not been initialized.")
     }
 
-    if (this.state.winner != null) {
+    if (state.winner != null) {
       throw new Error("Game has already ended.")
     }
 
     // Check for a surrender move (a team can surrender at any time)
     if (move instanceof SurrenderMove) {
       let winnerBySurrender = getEnemyTeam(move.team)
-      this.state.winnerBySurrender = winnerBySurrender
+      state.winnerBySurrender = winnerBySurrender
       // Add move to move history.
-      this.state.moves.push(move)
+      state.moves.push(move)
       return { winner: winnerBySurrender }
     }
 
     // Check if it's the specified team's turn.
-    let team = this.state.turn
+    let team = state.turn
     let nullTeamFlag = team == null
     if (nullTeamFlag) {
       team = move.team
@@ -154,8 +157,7 @@ module.exports = class Game {
         // Check if not installed / already installed.
         // (Condensed version that accounts for both installation
         //  and uninstallation using an XOR (!=))
-        let isInstalled = this.state.terminalCardState.get(team)
-          .has(move.cardType)
+        let isInstalled = terminalCardState.get(team).has(move.cardType)
         if (move.uninstall !== isInstalled) {
           throw new InvalidMoveError("Terminal card is already installed / uninstalled.")
         }
@@ -165,7 +167,7 @@ module.exports = class Game {
           if (move.uninstall) {
 
             // Get the card on the square.
-            card = this.state.lineBoostLocation.get(team).card
+            card = state.lineBoostLocation.get(team).card
 
             // Uninstall line boost.
             this._uninstallLineBoostCore(team, card)
@@ -186,8 +188,8 @@ module.exports = class Game {
             }
 
             // Install line boost.
-            this.state.lineBoostLocation.set(team, currentSquare)
-            this.state.terminalCardState.get(team)
+            state.lineBoostLocation.set(team, currentSquare)
+            terminalCardState.get(team)
               .set(TerminalCardType.lineBoost, true)
 
             card.lineBoosted = true
@@ -199,19 +201,16 @@ module.exports = class Game {
           if (move.uninstall) {
 
             // Uninstall firewall.
-            this.state.firewallLocation.get(team).firewall = null
-            this.state.firewallLocation.set(team, null)
-            this.state.terminalCardState.get(team)
+            state.firewallLocation.get(team).firewall = null
+            state.firewallLocation.set(team, null)
+            terminalCardState.get(team)
               .set(TerminalCardType.firewall, false)
           }
           else {
 
             // Check if the target square has an enemy card.
-            {
-              let { card } = currentSquare
-              if (card != null && card.owner !== team) {
-                throw new InvalidMoveError("Cannot install firewall on a square occupied by an enemy card.")
-              }
+            if (card != null && card.owner !== team) {
+              throw new InvalidMoveError("Cannot install firewall on a square occupied by an enemy card.")
             }
 
             // Check if enemy firewall is installed.
@@ -221,8 +220,8 @@ module.exports = class Game {
 
             // Install firewall.
             currentSquare.firewall = team
-            this.state.firewallLocation.set(team, currentSquare)
-            this.state.terminalCardState.get(team)
+            state.firewallLocation.set(team, currentSquare)
+            terminalCardState.get(team)
               .set(TerminalCardType.firewall, false)
           }
         }
@@ -237,7 +236,7 @@ module.exports = class Game {
         if (move.cardType === TerminalCardType.notFound) {
 
           // Check if the card is not consumed.
-          if (this.state.terminalCardState.get(team).get(TerminalCardType.notFound)) {
+          if (terminalCardState.get(team).get(TerminalCardType.notFound)) {
             throw new InvalidMoveError("404 Not Found card already consumed.")
           }
 
@@ -276,7 +275,7 @@ module.exports = class Game {
         if (move.cardType === TerminalCardType.virusCheck) {
 
           // Check if the card is not consumed.
-          if (this.state.terminalCardState.get(team).has(TerminalCardType.virusCheck)) {
+          if (terminalCardState.get(team).has(TerminalCardType.virusCheck)) {
             throw new InvalidMoveError("Virus Checker already consumed.")
           }
 
@@ -288,7 +287,7 @@ module.exports = class Game {
           // Reveal the card.
           card.revealed = true
 
-          this.state.terminalCardState.get(team).set(TerminalCardType.virusCheck, true)
+          terminalCardState.get(team).set(TerminalCardType.virusCheck, true)
         }
         else {
 
@@ -308,22 +307,22 @@ module.exports = class Game {
     }
 
     // Add move to move history.
-    this.state.moves.push(move)
+    state.moves.push(move)
 
     if (nullTeamFlag) {
       // We have to set this after all the throw statements
       // so we don't change the game state when they throw.
-      this.state.turn = team
+      state.turn = team
     }
 
     // Detect winner.
-    var winner = this.state.winner
+    let winner = state.winner
     if (winner != null) {
       ret.winner = winner
     }
     else {
       // Pass to next player.
-      this.state.turn = this._getNextPlayer()
+      state.turn = this._getNextPlayer()
     }
 
     return ret

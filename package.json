@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "babel-cli": "^6.1.1",
-    "babel-core": "^6.0.20",
+    "babel-core": "^6.1.2",
     "babel-plugin-transform-es2015-destructuring": "^6.0.18",
     "chai": "^1.9.2",
     "chokidar-cli": "^1.1.1",
