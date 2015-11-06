@@ -1,12 +1,13 @@
+'use strict'
 
-var Enum = require('symbol-enum')
+const Enum = require('symbol-enum')
 
 /**
  * The types of an online card.
- * @memberof RaiNet
- * @type {Enum}
- * @property {Symbol} link
- * @property {Symbol} virus
+ * @var {external:SymbolEnum} OnlineCardType
+ * @kind constant
+ * @property {Symbol} link Link card
+ * @property {Symbol} virus Virus card
  */
 const OnlineCardType = new Enum('link', 'virus')
 

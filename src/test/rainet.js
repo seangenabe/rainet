@@ -1,7 +1,7 @@
 
 var chai = require('chai')
 var expect = chai.expect
-var RaiNet = require('../rainet')
+var RaiNet = require('..')
 var InstallableTerminalCardMove = require('../installable-terminal-card-move')
 var getEnemyTeam = require('../get-enemy-team')
 var util = require('util')

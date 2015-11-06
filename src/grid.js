@@ -1,20 +1,21 @@
+'use strict'
 
-var assert = require('assert')
-var Location = require('./location')
-var Square = require('./square')
-var Team = require('./team')
+const Location = require('./location')
+const OnlineCardType = require('./online-card-type')
+const Square = require('./square')
+const Team = require('./team')
 
 /**
- * The game main board, composed of 8 columns and 8 rows.
- * @class
- * @memberof RaiNet
+ * Initializes a new instance of `Grid`.
+ * @class Grid
+ * @classdesc The game main board, composed of 8 columns and 8 rows.
  */
-class Grid {
+module.exports = class Grid {
 
   constructor() {
-    var squares = []
-    var rows = []
-    var columns = []
+    let squares = []
+    let rows = []
+    let columns = []
     this._squares = squares
     this._rows = rows
     this._columns = columns
@@ -24,19 +25,19 @@ class Grid {
       columns.push(new Array(8))
     }
 
-    for (var rowIndex = 0; rowIndex < 8; rowIndex++) {
-      for (var colIndex = 0; colIndex < 8; colIndex++) {
-        var location = new Location(colIndex, rowIndex)
-        var square = new Square(location)
+    for (let rowIndex = 0; rowIndex < 8; rowIndex++) {
+      for (let colIndex = 0; colIndex < 8; colIndex++) {
+        let location = new Location(colIndex, rowIndex)
+        let square = new Square(location)
         this._rows[rowIndex][colIndex] = square
         this._columns[colIndex][rowIndex] = square
         this._squares.push(square)
       }
     }
 
-    var startingSquares = {}
+    let startingSquares = new Map()
     this._startingSquares = startingSquares
-    startingSquares[Team.top] = [
+    startingSquares.set(Team.top, [
       rows[0][0],
       rows[0][1],
       rows[0][2],
@@ -45,8 +46,8 @@ class Grid {
       rows[0][5],
       rows[0][6],
       rows[0][7]
-    ]
-    startingSquares[Team.bottom] = [
+    ])
+    startingSquares.set(Team.bottom, [
       rows[7][0],
       rows[7][1],
       rows[7][2],
@@ -55,13 +56,14 @@ class Grid {
       rows[7][5],
       rows[7][6],
       rows[7][7]
-    ]
-    Object.freeze(startingSquares)
+    ])
   }
 
   /**
    * The rows of the board.
-   * @returns {Square[][]}
+   * @var {Square[][]} rows
+   * @memberof Grid.prototype
+   * @readonly
    */
   get rows() {
     return this._rows
@@ -69,7 +71,9 @@ class Grid {
 
   /**
    * The columns of the board.
-   * @returns {Square[][]}
+   * @var {Square[][]} columns
+   * @memberof Grid.prototype
+   * @readonly
    */
   get columns() {
     return this._columns
@@ -77,7 +81,9 @@ class Grid {
 
   /**
    * An array containing all squares.
-   * @returns {Square[]}
+   * @var {Square[]} squares
+   * @memberof Grid.prototype
+   * @readonly
    */
   get squares() {
     return this._squares
@@ -85,17 +91,23 @@ class Grid {
 
   /**
    * Looks up a location
-   * @param {Location} location
+   * @function lookup
+   * @memberof Grid.prototype
+   * @param {Location} location The location to look up.
    * @returns {?Square} The square if found, otherwise null.
    */
   lookup(location) {
-    assert(location instanceof Location)
+    if (!(location instanceof Location)) {
+      throw new TypeError("location must be a Location")
+    }
     return (this.rows[location.row] || [])[location.column]
   }
 
   /**
-   * Returns the starting squares for each player.
-   * @returns {Object.<Symbol, Square[]>} Team => Square[]
+   * Returns the starting squares for each {@link Team} player.
+   * @var {Map.<Symbol, Square[]>} startingSquares
+   * @memberof Grid.prototype
+   * @readonly
    */
   get startingSquares() {
     return this._startingSquares
@@ -103,8 +115,6 @@ class Grid {
 
   // DEBUG
   toStringDebug() {
-    var Team = require('./team')
-    var OnlineCardType = require('./online-card-type')
     var buffer = '\n'
     var teamChar = {
       [Team.top]: '^',
@@ -140,5 +150,3 @@ class Grid {
   }
 
 }
-
-module.exports = Grid

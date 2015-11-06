@@ -1,22 +1,26 @@
+'use strict'
 
-var assert = require('assert')
-var StackCause = require('./stack-cause')
-var Card = require('./card')
+const StackCause = require('./stack-cause')
+const Card = require('./card')
 
 // StackedOnlineCard objects are immutable.
 /**
- * Represents an Online Card in the stack area.
- * @class
- * @memberof RaiNet
- * @param {Card} card
- * @param {StackCause} cause
+ * Initializes a new instance of `StackedOnlineCard`.
+ * @class StackedOnlineCard
+ * @classdesc Represents an Online Card in the stack area.
+ * @param {Card} card The online card.
+ * @param {Symbol} cause {@link StackCause} How the online card got in the stack area.
  */
-class StackedOnlineCard {
+module.exports = class StackedOnlineCard {
 
   constructor(card, cause) {
 
-    assert(card instanceof Card, "Invalid argument: card")
-    assert(typeof(StackCause[cause]) === 'string', "Invalid argument: cause")
+    if (!(card instanceof Card)) {
+      throw new TypeError("card must be a Card")
+    }
+    if (!StackCause.hasValue(cause)) {
+      throw new TypeError("cause must be a member of StackCause")
+    }
 
     this._card = card
     this._cause = cause
@@ -25,20 +29,22 @@ class StackedOnlineCard {
 
   /**
    * The online card.
-   * @returns {Card}
+   * @var {Card} card
+   * @memberof StackedOnlineCard.prototype
+   * @readonly
    */
   get card() {
     return this._card
   }
 
   /**
-   * How the online card got in the stack area.
-   * @returns {Symbol} StackCause
+   * {@link StackCause} How the online card got in the stack area.
+   * @var {Symbol} cause
+   * @memberof StackedOnlineCard.prototype
+   * @readonly
    */
   get cause() {
     return this._cause
   }
 
 }
-
-module.exports = StackedOnlineCard

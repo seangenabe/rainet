@@ -1,36 +1,38 @@
+'use strict'
 
-var assert = require('assert')
-var Move = require('./move')
-var Location = require('./location')
-var TerminalCardType = require('./terminal-card-type')
+const Move = require('./move')
+const TerminalCardType = require('./terminal-card-type')
 
 /**
- * Represents a move using a terminal card.
- * @class
- * @memberof RaiNet
- * @param {Object} [opts]
- * @param {Symbol} opts.cardType TerminalCardType
+ * Initializes a new instance of TerminalCardMove.
+ * @classdesc The base class for moves using a terminal card.
+ * @class TerminalCardMove
+ * @param {object} opts
+ * @param {Symbol} opts.team Passed to {@link Move|Move constructor}
+ * @param {Square} [opts.square] Passed to {@link Move|Move constructor}
  */
-class TerminalCardMove extends Move {
+module.exports = class TerminalCardMove extends Move {
 
   constructor(opts) {
     super(opts)
 
-    var {cardType} = opts
+    let { cardType } = opts
 
-    assert(typeof(TerminalCardType[cardType]) === 'string', "Invalid argument: opts.cardType")
+    if (!TerminalCardType.hasValue(cardType)) {
+      throw new TypeError("cardType must be a member of TerminalCardType")
+    }
 
     this._cardType = cardType
   }
 
   /**
-   * The type of the terminal card.
-   * @returns {Symbol} TerminalCardType
+   * Returns the type of the terminal card.
+   * @var {TerminalCardType} cardType
+   * @memberof TerminalCardMove.prototype
+   * @readonly
    */
   get cardType() {
     return this._cardType
   }
 
 }
-
-module.exports = TerminalCardMove

@@ -1,7 +1,6 @@
 
-var chai = require('chai')
-var Direction = require('../direction')
-var expect = chai.expect
+const { expect } = require('chai')
+const Direction = require('../direction')
 
 describe('Direction', function() {
 
@@ -12,7 +11,7 @@ describe('Direction', function() {
       expect(Direction[Direction.down]).to.be.equal('down')
       expect(Direction[Direction.left]).to.be.equal('left')
       expect(Direction[Direction.right]).to.be.equal('right')
-      expect(Array.keys(Direction.keys())).to.have.members(['right', 'down', 'up', 'left'])
+      expect(Array.from(Direction.keys())).to.have.members(['right', 'down', 'up', 'left'])
     })
 
   })

@@ -1,13 +1,10 @@
 
-var makeError = require('make-error')
+const makeError = require('make-error')
 
 /**
- * Thrown when an invalid move is submitted.
- * @class
- * @memberof RaiNet
- * @param {string} [message]
+ * @classdesc Thrown when an invalid move is submitted.
+ * @class InvalidMoveError
  * @extends Error
+ * @param {string} [message]
  */
-var InvalidMoveError = makeError('InvalidMoveError')
-
-module.exports = InvalidMoveError
+module.exports = makeError('InvalidMoveError')

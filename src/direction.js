@@ -1,15 +1,14 @@
+'use strict'
 
-var Enum = require('symbol-enum')
+const Enum = require('symbol-enum')
 
 /**
- *  Distinguishes between directions.
- *  @type {Enum}
- *  @memberof RaiNet
- *  @property {Symbol} up
- *  @property {Symbol} down
- *  @property {Symbol} left
- *  @property {Symbol} right
+ * Distinguishes between directions.
+ * @var {external:SymbolEnum} Direction
+ * @kind constant
+ * @property {Symbol} up Up
+ * @property {Symbol} down Down
+ * @property {Symbol} left Left
+ * @property {Symbol} right Right
  */
-var Direction = new Enum('up', 'down', 'left', 'right')
-
-module.exports = Direction
+module.exports = new Enum('up', 'down', 'left', 'right')

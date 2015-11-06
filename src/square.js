@@ -1,83 +1,108 @@
+'use strict'
 
-var assert = require('assert')
-var Location = require('./location')
-var Team = require('./team')
-var Card = require('./card')
-var Direction = require('./direction')
-var values = require('./util/values')
-
-const directions = values(Direction)
+const Card = require('./card')
+const Location = require('./location')
+const Team = require('./team')
 
 /**
- *  Represents a square on the board.
- *  Also covers the special server squares.
- *  @class
- *  @memberof RaiNet
- *  @param {Location} The location of the square.
+ * Initializes a new instance of `Square`.
+ * @classdesc
+ *   Represents a square on the board.
+ *   Also covers the special server squares.
+ * @class Square
+ * @param {Location} location The location of the square.
+ * @throws {TypeError}
  */
 class Square {
 
+  /**
+   * @member {Location} _location
+   * @memberof Square.prototype
+   * @access private
+   */
+
+  /**
+   * @member {Map.<Symbol, Square>} _adjacentSquares
+   * @memberof Square.prototype
+   * @access private
+   */
+
+  /**
+   * @member {?Card} _card
+   * @memberof Square.prototype
+   * @access private
+   */
+
+  /**
+   * @member {?Symbol} _firewall
+   * @memberof Square.prototype
+   * @access private
+   */
+
   constructor(location) {
 
-    assert(location instanceof Location, "Invalid argument: location")
+    if (!(location instanceof Location)) {
+      throw new TypeError("location must be Location")
+    }
 
     this._location = location
-    var adjacentSquares = {}
-    this._adjacentSquares = adjacentSquares
-
-    for (let direction of directions) {
-      adjacentSquares[direction] = null
-    }
+    this._adjacentSquares = new Map()
 
     this._card = null
     this._firewall = null
 
-    Object.seal(adjacentSquares)
     Object.seal(this)
   }
 
-  endInitialize() {
-    Object.freeze(this._adjacentSquares)
-  }
-
-  /** The location of this square. Can be null for the server squares.
-   * @returns {Location}
+  /**
+   * The location of this square. Can be {@link Location.null} for the server squares.
+   * @var {Location} location
+   * @memberof Square.prototype
+   * @readonly
    */
   get location() {
     return this._location
   }
 
   /**
-   * The adjacent squares to this square.
-   * @returns {Object.<Symbol, Square>} Direction => Square
+   * The adjacent squares to this square keyed by {@link Direction}.
+   * @var {Map.<Symbol, Square>} adjacentSquares
+   * @memberof Square.prototype
+   * @readonly
    */
   get adjacentSquares() {
     return this._adjacentSquares
   }
 
   /**
-   * The card currently occupying this square. Null if none.
-   * @returns {?Card}
+   * The card currently occupying this square. Null if none. Throws `TypeError`.
+   * @var {?Card} card
+   * @memberof Square.prototype
    */
   get card() {
     return this._card
   }
-  /** @param {?Card} value */
   set card(value) {
-    assert(value == null || value instanceof Card)
+    if (!(value == null || value instanceof Card)) {
+      throw new TypeError("card must be a nullable Card")
+    }
     this._card = value
   }
 
   /**
-   * Whose player a Firewall card on this square belongs to. Null if none.
-   * @return {Symbol} Team
+   * {@link Team} Whose player a Firewall card on this square belongs to.
+   * Null if none.
+   * Throws `TypeError`.
+   * @var {?Symbol} firewall
+   * @memberof Square.prototype
    */
   get firewall() {
     return this._firewall
   }
-  /** @param {Symbol} value */
   set firewall(value) {
-    assert(value == null || typeof(Team[value]) === 'string')
+    if (!(value == null || typeof Team[value] === 'string')) {
+      throw new TypeError("firewall must be a nullable symbol")
+    }
     this._firewall = value
   }
 

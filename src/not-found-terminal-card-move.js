@@ -1,24 +1,28 @@
+'use strict'
 
-var assert = require('assert')
-var TerminalCardMove = require('./terminal-card-move')
-var Square = require('./square')
+const TerminalCardMove = require('./terminal-card-move')
 
 /**
- * Represents a move using a 404 Not Found card.
- * @class
- * @memberof RaiNet
+ * Initializes a new instance of `NotFoundTerminalCardMove`
+ * @classdesc Represents a move using a 404 Not Found card.
+ * @class NotFoundTerminalCardMove
  * @param {Object} opts
- * @param {Square} opts.other
- * @param {boolean} opts.swap
+ * @param {Symbol} opts.team Passed to {@link Move|Move constructor}
+ * @param {Square} [opts.square] Passed to {@link Move|Move constructor}
+ * @param {Symbol} opts.cardType Passed to {@link TerminalCardMove|TerminalCardMove constructor}
+ * @param {Square} opts.other The other square.
+ * @param {boolean} [opts.swap] Whether to swap the cards.
  */
-class NotFoundTerminalCardMove extends TerminalCardMove {
+module.exports = class NotFoundTerminalCardMove extends TerminalCardMove {
 
   constructor(opts) {
     super(opts)
 
-    var {other, swap} = opts
+    let {other, swap} = opts
 
-    assert(other instanceof Square, "Invalid argument: opts.other")
+    if (!(other instanceof TerminalCardMove)) {
+      throw new TypeError("other must be TerminalCardMove")
+    }
 
     this._other = other
     this._swap = !!swap
@@ -26,7 +30,9 @@ class NotFoundTerminalCardMove extends TerminalCardMove {
 
   /**
    * The other square.
-   * @returns {Square}
+   * @var {Square} other
+   * @memberof NotFoundTerminalCardMove.prototype
+   * @readonly
    */
   get other() {
     return this._other
@@ -34,12 +40,12 @@ class NotFoundTerminalCardMove extends TerminalCardMove {
 
   /**
    * Whether to swap the cards.
-   * @returns {boolean}
+   * @var {boolean} swap
+   * @memberof NotFoundTerminalCardMove.prototype
+   * @readonly
    */
   get swap() {
     return this._swap
   }
 
 }
-
-module.exports = NotFoundTerminalCardMove

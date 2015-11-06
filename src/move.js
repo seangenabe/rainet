@@ -1,35 +1,36 @@
+'use strict'
 
-var assert = require('assert')
-var Square = require('./square')
-var Team = require('./team')
-var values = require('./util/values')
+const Team = require('./team')
 
-const teams = values(Team)
-
-// Move objects are immutable.
 /**
- * Represents a game move.
- * @class
- * @memberof RaiNet
- * @param {Object} opts
- * @param {Symbol} opts.player
- * @param {Square} opts.source
+ * Initializes a new instance of Move.
+ * @class Move
+ * @classdesc Represents a game move. Move objects should be considered immutable.
+ * @param {object} opts
+ * @param {Symbol} opts.team {@link Team} The team who made this move.
+ * @param {Square} [opts.square] The square on which this move is operated upon.
  */
-class Move {
+module.exports = class Move {
 
   constructor(opts) {
 
-    assert(typeof(opts) === 'object', "Invalid argument: opts")
-    var team = opts.team, source = opts.source
-    assert(typeof(Team[team]) === 'string', "Invalid argument: opts.team")
+    if (typeof opts !== 'object') {
+      throw new TypeError("opts must be an object")
+    }
+    let { team, source } = opts
+    if (typeof Team[team] !== 'string') {
+      throw new TypeError("opts.team must be a member of Team")
+    }
 
     this._source = source
     this._team = team
   }
 
   /**
-   * The team who made this move.
-   * @returns {Symbol} Player
+   * The team who executed this move.
+   * @member {Symbol} team
+   * @readonly
+   * @memberof {Move}
    */
   get team() {
     return this._team
@@ -38,6 +39,8 @@ class Move {
   /**
    * The square on which this move is operated upon.
    * For online cards, this is the source square.
+   * @memberof Move
+   * @readonly
    * @returns {Square}
    */
   get source() {
@@ -45,5 +48,3 @@ class Move {
   }
 
 }
-
-module.exports = Move

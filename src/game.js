@@ -1,33 +1,25 @@
+'use strict'
 
-var assert = require('assert')
-var GameState = require('./game-state')
-var InvalidMoveError = require('./invalid-move-error')
-var Move = require('./move')
-var OnlineCardMove = require('./online-card-move')
-var TerminalCardMove = require('./terminal-card-move')
-var StackedOnlineCard = require('./stacked-online-card')
-var InstallableTerminalCardMove = require('./installable-terminal-card-move')
-var NotFoundTerminalCardMove = require('./not-found-terminal-card-move')
-var SurrenderMove = require('./surrender-move')
-var TerminalCardType = require('./terminal-card-type')
-var Team = require('./team')
-var Square = require('./square')
-var Direction = require('./direction')
-var StackCause = require('./stack-cause')
-var Card = require('./card')
-var getEnemyTeam = require('./get-enemy-team')
-var OnlineCardType = require('./online-card-type')
-var values = require('./util/values')
-var merge = require('./util/merge')
-
-const teams = values(Team)
+const assign = require('lodash.assign')
+const GameState = require('./game-state')
+const getEnemyTeam = require('./get-enemy-team')
+const InstallableTerminalCardMove = require('./installable-terminal-card-move')
+const InvalidMoveError = require('./invalid-move-error')
+const Move = require('./move')
+const NotFoundTerminalCardMove = require('./not-found-terminal-card-move')
+const OnlineCardMove = require('./online-card-move')
+const StackCause = require('./stack-cause')
+const StackedOnlineCard = require('./stacked-online-card')
+const SurrenderMove = require('./surrender-move')
+const TerminalCardMove = require('./terminal-card-move')
+const TerminalCardType = require('./terminal-card-type')
 
 /**
- * Represents a game
- * @class
- * @memberof RaiNet
+ * Initializes a new instance of `Game`.
+ * @class Game
+ * @classdesc Represents a game.
  */
-class Game {
+module.exports = class Game {
 
   constructor() {
     this._state = new GameState()
@@ -36,21 +28,25 @@ class Game {
   }
 
   /**
-   * The game's state
-   * @returns {GameState}
+   * The game's state. Throws `TypeError`.
+   * @var {GameState} state
+   * @memberof Game.prototype
    */
   get state() {
     return this._state
   }
-  /** @param {GameState} value */
   set state(value) {
-    assert(value instanceof GameState)
+    if (!(value instanceof GameState)) {
+      throw new TypeError("state must be a GameState.")
+    }
     this._state = value
   }
 
   /**
-   * Start the game.
-   * @param {object} startArgs
+   * Starts the game.
+   * @function start
+   * @memberof Game.prototype
+   * @param {object} startArgs Passed to {@link GameState#initialize}
    * @param {Symbol} startArgs.startingTeam
    * @param {Object.<Symbol, Array<number>>} startArgs.arrangement
    */
@@ -61,20 +57,28 @@ class Game {
 
   /**
    * Submits a move to the game and modifies the game state.
+   * @function submitMove
+   * @memberof Game.prototype
+   * @returns {ExecutedMoveData}
    * @throws {InvalidMoveError} The move is not allowed.
-   * @returns ExecutedMoveData
+   * @throws {TypeError}
    */
   submitMove(move) {
 
-    assert(move instanceof Move, "Invalid argument: move")
+    if (!(move instanceof Move)) {
+      throw new TypeError("move must be a Move")
+    }
 
-    var ret = { terminal: [] }
+    let ret = { terminal: [] }
 
     // Validations
-    if (!this.isInitialized)
+    if (!this.isInitialized) {
       throw new Error("Game has not been initialized.")
-    if (this.state.winner != null)
+    }
+
+    if (this.state.winner != null) {
       throw new Error("Game has already ended.")
+    }
 
     // Check for a surrender move (a team can surrender at any time)
     if (move instanceof SurrenderMove) {
@@ -86,19 +90,20 @@ class Game {
     }
 
     // Check if it's the specified team's turn.
-    var team = this.state.turn
-    var nullTeamFlag = team == null
+    let team = this.state.turn
+    let nullTeamFlag = team == null
     if (nullTeamFlag) {
       team = move.team
     }
     else {
       // Verify submitted move player.
-      if (team != move.team)
+      if (team !== move.team) {
         throw new InvalidMoveError("It is not the turn of the player of the specified move.")
+      }
     }
 
-    var currentSquare = move.source // can be null when move.uninstall === true
-    var card = currentSquare ? currentSquare.card : null;
+    let currentSquare = move.source // can be null when move.uninstall === true
+    let card = currentSquare ? currentSquare.card : null;
 
     // Check if the card moved is an online card.
     if (move instanceof OnlineCardMove) {
@@ -107,8 +112,8 @@ class Game {
       this._requireTeamCardOnSquare(currentSquare, team)
 
       // Check if we can move the card.
-      var submove1 = this._tryMoveToSquare(team, currentSquare, move.direction)
-      var submove2
+      let submove1 = this._tryMoveToSquare(team, currentSquare, move.direction)
+      let submove2
 
       if (submove1.server) {
         submove1.revealCard = move.revealCard
@@ -122,36 +127,45 @@ class Game {
         }
 
         // Check if we can move the card a second time.
-        submove2 = this._tryMoveToSquare(team, submove1.destinationSquare, move.direction2)
+        submove2 = this._tryMoveToSquare(
+          team,
+          submove1.destinationSquare,
+          move.direction2
+        )
+
         if (submove2.server) {
           submove2.revealCard = move.revealCard
         }
       }
 
       // Execute the moves.
-      var realSubmove = this._moveToSquare(team, submove1, card, currentSquare)
+      let realSubmove = this._moveToSquare(team, submove1, card, currentSquare)
       if (submove2 != null) {
-        realSubmove = this._moveToSquare(team, submove2, card, submove1.destinationSquare)
+        realSubmove =
+          this._moveToSquare(team, submove2, card, submove1.destinationSquare)
       }
 
-      merge(ret, realSubmove)
+      assign(ret, realSubmove)
     }
     else {
       // Check if the card moved is an installable terminal card.
       if (move instanceof InstallableTerminalCardMove) {
 
         // Check if not installed / already installed.
-        // (Condensed version that accounts for both installation and uninstallation using an XOR (!=))
-        if (move.uninstall !== this.state.terminalCardState[team][move.cardType]) {
+        // (Condensed version that accounts for both installation
+        //  and uninstallation using an XOR (!=))
+        let isInstalled = this.state.terminalCardState.get(team)
+          .has(move.cardType)
+        if (move.uninstall !== isInstalled) {
           throw new InvalidMoveError("Terminal card is already installed / uninstalled.")
         }
 
         // Check if the card moved is a Line Boost card.
         if (move.cardType === TerminalCardType.lineBoost) {
-
           if (move.uninstall) {
 
-            card = this.state.lineBoostLocation[team].card
+            // Get the card on the square.
+            card = this.state.lineBoostLocation.get(team).card
 
             // Uninstall line boost.
             this._uninstallLineBoostCore(team, card)
@@ -162,16 +176,19 @@ class Game {
             this._requireTeamCardOnSquare(currentSquare, team)
 
             // Check if the square is given.
-            if (currentSquare == null)
+            if (currentSquare == null) {
               throw new InvalidMoveError("Source square not specified.")
+            }
 
             // Make sure the card on the square has line boost uninstalled.
-            if (card.lineBoosted)
+            if (card.lineBoosted) {
               throw new Error("Invalid game state.")
+            }
 
             // Install line boost.
-            this.state.lineBoostLocation[team] = currentSquare
-            this.state.terminalCardState[team][TerminalCardType.lineBoost] = true
+            this.state.lineBoostLocation.set(team, currentSquare)
+            this.state.terminalCardState.get(team)
+              .set(TerminalCardType.lineBoost, true)
 
             card.lineBoosted = true
           }
@@ -182,15 +199,19 @@ class Game {
           if (move.uninstall) {
 
             // Uninstall firewall.
-            this.state.firewallLocation[team].firewall = null
-            this.state.firewallLocation[team] = null
-            this.state.terminalCardState[team][TerminalCardType.firewall] = false
+            this.state.firewallLocation.get(team).firewall = null
+            this.state.firewallLocation.set(team, null)
+            this.state.terminalCardState.get(team)
+              .set(TerminalCardType.firewall, false)
           }
           else {
 
             // Check if the target square has an enemy card.
-            if (currentSquare.card != null && currentSquare.card.owner != team) {
-              throw new InvalidMoveError("Cannot install firewall on a square occupied by an enemy card.")
+            {
+              let { card } = currentSquare
+              if (card != null && card.owner !== team) {
+                throw new InvalidMoveError("Cannot install firewall on a square occupied by an enemy card.")
+              }
             }
 
             // Check if enemy firewall is installed.
@@ -200,8 +221,9 @@ class Game {
 
             // Install firewall.
             currentSquare.firewall = team
-            this.state.firewallLocation[team] = currentSquare
-            this.state.terminalCardState[team][TerminalCardType.firewall] = true
+            this.state.firewallLocation.set(team, currentSquare)
+            this.state.terminalCardState.get(team)
+              .set(TerminalCardType.firewall, false)
           }
         }
         else {
@@ -215,22 +237,22 @@ class Game {
         if (move.cardType === TerminalCardType.notFound) {
 
           // Check if the card is not consumed.
-          if (this.state.terminalCardState[team][TerminalCardType.notFound]) {
+          if (this.state.terminalCardState.get(team).get(TerminalCardType.notFound)) {
             throw new InvalidMoveError("404 Not Found card already consumed.")
           }
 
           // Require own cards on both squares.
           this._requireTeamCardOnSquare(currentSquare, team)
-          var other: Square = move.other
+          let other = move.other
           this._requireTeamCardOnSquare(other, team)
-          var otherCard: Card = other.card
+          let otherCard = other.card
 
           if (move.swap) {
 
             // Swap the cards.
             currentSquare.card = other.card
             other.card = card
-            function lineBoostSwap(c1, c2) {
+            let lineBoostSwap = function lineBoostSwap(c1, c2) {
 
               if (c1.lineBoosted) {
                 c2.lineBoosted = true
@@ -254,7 +276,7 @@ class Game {
         if (move.cardType === TerminalCardType.virusCheck) {
 
           // Check if the card is not consumed.
-          if (this.state.terminalCardState[team][TerminalCardType.virusCheck]) {
+          if (this.state.terminalCardState.get(team).has(TerminalCardType.virusCheck)) {
             throw new InvalidMoveError("Virus Checker already consumed.")
           }
 
@@ -266,7 +288,7 @@ class Game {
           // Reveal the card.
           card.revealed = true
 
-          this.state.terminalCardState[team][TerminalCardType.virusCheck] = true
+          this.state.terminalCardState.get(team).set(TerminalCardType.virusCheck, true)
         }
         else {
 
@@ -309,8 +331,10 @@ class Game {
 
   /**
    * Returns the next player to play.
-   * @returns {Symbol} Team
-   * @private
+   * @function _getNextPlayer
+   * @memberof Game.prototype
+   * @access private
+   * @returns {Symbol} {@link Team}
    */
   _getNextPlayer() {
     return getEnemyTeam(this.state.turn)
@@ -318,15 +342,19 @@ class Game {
 
   /**
    * Test if an online card can be moved.
-   * @param {Symbol} team Team
-   * @param {Square} source
-   * @param {Symbol} direction Direction
+   * @function _tryMoveToSquare
+   * @memberof Game.prototype
+   * @access private
+   * @param {Symbol} team {@link Team} The team executing the move.
+   * @param {Square} source The source square of the online card.
+   * @param {Symbol} direction
+   *   {@link Direction} The direction to move the card into.
    * @returns {MoveParameters}
-   * @private
+   * @throws {InvalidMoveError}
    */
   _tryMoveToSquare(team, source, direction) {
 
-    var destinationSquare = source.adjacentSquares[direction]
+    let destinationSquare = source.adjacentSquares.get(direction)
 
     // Check if the square is not outside the board.
     if (destinationSquare == null) {
@@ -334,37 +362,36 @@ class Game {
     }
 
     // Check if the card is moving toward an enemy firewall.
-    if (destinationSquare.firewall != null && destinationSquare.firewall != team) {
-      throw new InvalidMoveError("Cannot move card to firewalled square.")
+    {
+      let firewall = destinationSquare.firewall
+      if (firewall != null && firewall !== team) {
+        throw new InvalidMoveError("Cannot move card to firewalled square.")
+      }
     }
 
     // Check if the card is moving towards own server area.
-    if (destinationSquare === this.state.board.server[team]) {
+    if (destinationSquare === this.state.board.server.get(team)) {
       throw new InvalidMoveError('Cannot move to own server area.');
     }
 
-    var ret
-
-    for (let enemy of teams) {
-      if (enemy != team && destinationSquare === this.state.board.server[enemy]) {
-        ret = {
+    // Check if the card is moving towards the enemy server area.
+    {
+      let enemy = getEnemyTeam(team)
+      if (destinationSquare === this.state.board.server.get(enemy)) {
+        return {
           destinationSquare: destinationSquare,
           stop: true,
           server: enemy
         }
-        break
       }
     }
 
-    if (ret != null)
-      return ret
-
     if (destinationSquare.card != null) {
 
-      // Destination not empty.
+      // Destination is not empty.
 
-      // Check owner.
-      if (destinationSquare.card.owner == team) {
+      // Check if player owns card in the destination.
+      if (destinationSquare.card.owner === team) {
         throw new InvalidMoveError("Cannot move to a square occupied by player's own card.")
       }
 
@@ -375,14 +402,17 @@ class Game {
       }
     }
 
+    // Destination is not empty.
     return {
       destinationSquare: destinationSquare
     }
   }
 
-
   /**
-   * Execute a submove.
+   * Executes a submove.
+   * @function _moveToSquare
+   * @memberof Game.prototype
+   * @access private
    * @param {Symbol} team Team
    * @param {MoveParameters} move
    * @param {Card} card
@@ -391,7 +421,7 @@ class Game {
    */
   _moveToSquare(team, move, card, source) {
 
-    var ret = { terminal: [] }
+    let ret = { terminal: [] }
 
     if (move.server) {
 
@@ -415,11 +445,14 @@ class Game {
 
       // Add to stack.
       var stacked = new StackedOnlineCard(card, StackCause.infiltrated)
-      this.state.board.stackArea[team].push(stacked)
+      this.state.board.stackArea.get(team).push(stacked)
       ret.deltaStackArea = [{owner: team, stacked: stacked}]
 
       // Add score.
-      this.state.cardScore[team][card.type]++
+      {
+        let teamScore = this.state.cardScore.get(team)
+        teamScore.set(card.type, teamScore.get(card.type) + 1)
+      }
 
       ret.server = {
         serverTeam: move.server
@@ -437,7 +470,7 @@ class Game {
 
       // Add to stack.
       var enemyStacked = new StackedOnlineCard(card, StackCause.captured)
-      this.state.board.stackArea[team].push(enemyStacked)
+      this.state.board.stackArea.get(team).push(enemyStacked)
       ret.deltaStackArea = [{owner: team, stacked: enemyStacked}]
 
       // Uninstall the line boost from the enemy card if present.
@@ -451,7 +484,10 @@ class Game {
       }
 
       // Add score.
-      this.state.cardScore[team][enemyCard.type]++
+      {
+        let teamCardScore = this.state.cardScore.get(team)
+        teamCardScore.set(enemyCard.type, teamCardScore.get(enemyCard.type) + 1)
+      }
 
       ret.capture = {
         subject: team,
@@ -463,7 +499,7 @@ class Game {
     move.destinationSquare.card = card
     source.card = null
     // Update line boost location.
-    this.state.lineBoostLocation[team] = move.destinationSquare
+    this.state.lineBoostLocation.set(team, move.destinationSquare)
 
     return ret
   }
@@ -471,30 +507,36 @@ class Game {
   // This is a core method; verifications about the current game state should be made beforehand.
   /**
    * Uninstall the player's line boost card.
-   * @param {Symbol} team Team
+   * @function _uninstallLineBoostCore
+   * @memberof Game.prototype
+   * @access private
+   * @param {Symbol} team {@link Team}
    * @param {Card} card
    */
   _uninstallLineBoostCore(team, card) {
-    this.state.terminalCardState[team][TerminalCardType.lineBoost] = false
-    this.state.lineBoostLocation[team] = null
+    this.state.terminalCardState.get(team).set(TerminalCardType.lineBoost, false)
+    this.state.lineBoostLocation.delete(team)
     card.lineBoosted = false
   }
 
   /**
    * Throws an exception if the board square does not have a card owned by the player.
+   * @function _requireTeamCardOnSquare
+   * @memberof Game.prototype
+   * @access private
    * @param {Square} square
-   * @param {Symbol} team Team
+   * @param {Symbol} team {@link Team}
+   * @throws {InvalidMoveError}
    */
   _requireTeamCardOnSquare(square, team) {
-
     try {
-      if (square == null)
+      if (square == null) {
         throw new InvalidMoveError("Source square not provided.")
-
-      if (square.card == null)
+      }
+      if (square.card == null) {
         throw new InvalidMoveError("There is no card on that square.")
-
-      if (square.card.owner != team) {
+      }
+      if (square.card.owner !== team) {
         throw new InvalidMoveError("The player does not own an online card on that square.")
       }
     }
@@ -515,16 +557,42 @@ class Game {
  */
 
 /**
+ * @typedef StackAreaDelta
+ * @property {Symbol} owner {@link Team}
+ * @property {StackedOnlineCard} stacked
+ */
+          /**
+           * @typedef ExecutedMoveToSquareData
+           * @property {?TerminalMoveData[]} terminal
+           * @property {?StackAreaDelta[]} deltaStackArea
+           * @property {?Symbol} server {@link Team}
+           * @property {?CaptureData} capture
+           */
+
+/**
  * @typedef ExecutedSubmoveTerminalCardData
- * @property {Team}  team  The team that owns the terminal card.
- * @property {TerminalCardType}  type  The type of the terminal card.
- * @property {?boolean}  uninstall  Whether to uninstall the terminal card.
+ * @property {Symbol} team
+ *   {@link Team} The team that owns the terminal card.
+ * @property {Symbol} type
+ *   {@link TerminalCardType} The type of the terminal card.
+ * @property {?boolean} uninstall
+ *   Whether to uninstall the terminal card.
  */
 
 /**
  * @typedef ExecutedSubmoveData
- * @property {ExecutedSubmoveTerminalCardData[]}  terminal
- * @property {?object}  server
+ * @property {?ExecutedSubmoveTerminalCardData[]} terminal
+ *   Terminal card move data.
+ * @property {?StackAreaDelta[]} deltaStackArea
+ *   Changes to the stack area.
+ * @property {?object} capture Capture data.
+ * @property {Symbol} capture.subject {@link Team} The team capturing the card.
+ * @property {Symbol} capture.object
+ *   {@link Team} The team with the captured card.
+ * @property {Symbol} capture.type
+ *   {@link OnlineCardType} The type of the captured card.
+ * @property {?object} server
+ *
  * @property {Team}  server.serverTeam  The team of the invaded server.
  * @property {?object}  capture
  * @property {Team}  capture.subject  The team capturing the card.
@@ -532,9 +600,8 @@ class Game {
  */
 
 /**
+ * Data about the state of the game after submitting the move.
+ * Also has the properties of {@link ExecutedSubmoveData}.
  * @typedef ExecutedMoveData
- * @extends ExecutedSubmoveData
  * @property {?Team} winner
  */
-
-module.exports = Game

@@ -1,46 +1,63 @@
+'use strict'
 
-var assert = require('assert')
-var OnlineCardType = require('./online-card-type')
-var Team = require('./team')
-var values = require('./util/values')
-
-const onlineCardTypes = values(OnlineCardType)
+const OnlineCardType = require('./online-card-type')
+const Team = require('./team')
 
 /**
  * Represents an online card.
- * @class
- * @memberof RaiNet
- * @param {Symbol} opts.type
- * @param {Symbol} opts.owner
+ * @class Card
+ * @param {object} opts
+ * @param {Symbol} opts.type {@link OnlineCardType} The type of Online Card.
+ * @param {Symbol} opts.owner {@link Team} The owner of the Online Card.
  */
-class Card {
+module.exports = class Card {
+
+  /**
+   * @var {Symbol} _type
+   * @memberof Card.prototype
+   * @access private
+   */
+
+  /**
+   * @var {Symbol} _owner
+   * @memberof Card.prototype
+   * @access private
+   */
 
   constructor(opts) {
+    if (typeof opts !== 'object') {
+      throw new TypeError("opts must be an object")
+    }
+    const { type, owner } = opts
 
-    assert(typeof(opts) === 'object', "Invalid argument: opts")
-    assert(typeof(OnlineCardType[opts.type]) === 'string', "Invalid argument: opts.type")
-    assert(typeof(Team[opts.owner]) === 'string', "Invalid argument: opts.owner")
+    if (!OnlineCardType.hasValue(type)) {
+      throw new TypeError("opts.type must be a member of OnlineCardType")
+    }
+    if (!Team.hasValue(owner)) {
+      throw new TypeError("opts.owner must be a member of Team")
+    }
 
-    var {type, owner} = opts
     this._type = type
     this._owner = owner
-    this.revealed = false
-    this.lineBoosted = false
 
     Object.seal(this)
   }
 
   /**
-   * The type of the online card.
-   * @returns {Symbol} OnlineCardType
+   * {@link OnlineCardType} The type of the online card.
+   * @var {Symbol} type
+   * @memberof Card.prototype
+   * @readonly
    */
   get type() {
     return this._type
   }
 
   /**
-   * The team who owns the online card.
-   * @returns {Symbol} A Team value.
+   * {@Team} The team who owns the online card.
+   * @var {Symbol} owner
+   * @memberof Card.prototype
+   * @readonly
    */
   get owner() {
     return this._owner
@@ -48,76 +65,85 @@ class Card {
 
   /**
    * Whether this card has been revealed by a Virus Checker card.
-   * @returns {boolean}
+   * @var {boolean} revealed
+   * @memberof Card.prototype
    */
-  get revealed(): boolean {
+  get revealed() {
     return this._revealed
   }
-  /** @param {boolean} value */
   set revealed(value) {
     this._revealed = !!value
   }
 
   /**
    * Whether this card is line boosted.
-   * @returns {boolean}
+   * @var {boolean} lineBoosted
+   * @memberof Card.prototype
    */
   get lineBoosted() {
     return this._lineBoosted
   }
-  /** @param {boolean} value */
   set lineBoosted(value) {
     this._lineBoosted = !!value
   }
 
   /**
    * Generates online cards of the specified type for the specified team.
+   * @function generateOnlineCardsForTeam
+   * @memberof Card
    * @static
-   * @param {Symbol} owner Player
-   * @param {Symbol} [type] OnlineCardType
-   * @returns {Card[]}
+   * @param {Symbol} owner {@link Team}
+   * @param {Symbol} [type] {@link OnlineCardType}
+   * @returns {Iterator.<Card>}
    */
   static generateOnlineCardsForTeam(owner, type) {
-
-    assert(typeof(Team[owner]) === 'string')
-    assert(typeof(OnlineCardType[type]) === 'string')
-
-    if (type)
-      return Card._generateOnlineCardsOfTypeForTeam(owner, type)
-    else
-      return Card._generateOnlineCardsForTeam(owner)
-  }
-
-  /**
-   * @param {Symbol} owner
-   * @returns {Card[]}
-   * @private
-   */
-  static _generateOnlineCardsForTeam(owner) {
-    var cards = []
-    for (let type of onlineCardTypes) {
-      cards = cards.concat(Card._generateOnlineCardsOfTypeForTeam(owner, type))
+    if (!Team.hasValue(owner)) {
+      throw new TypeError("owner must be a member of Team")
     }
-    return cards
+
+    if (type) {
+      if (!OnlineCardType.hasValue(type)) {
+        throw new TypeError("type must be a member of OnlineCardType")
+      }
+      return Card._generateOnlineCardsOfTypeForTeam(owner, type)
+    }
+    else {
+      return Card._generateOnlineCardsForTeam(owner)
+    }
   }
 
   /**
+   * @function _generateOnlineCardsForTeam
+   * @memberof Card
+   * @access private
+   * @static
+   * @param {Symbol} owner
+   * @returns {Iterator.<Card>}
+   */
+  static *_generateOnlineCardsForTeam(owner) {
+    for (let type of OnlineCardType.values()) {
+      for (let item of Card._generateOnlineCardsOfTypeForTeam(owner, type)) {
+        yield item
+      }
+    }
+  }
+
+  /**
+   * @function _generateOnlineCardsOfTypeForTeam
+   * @memberof Card
+   * @access private
+   * @static
    * @param {Symbol} owner
    * @param {Symbol} type
-   * @returns {Card[]}
-   * @private
+   * @returns {Iterator.<Card>}
    */
-  static _generateOnlineCardsOfTypeForTeam(owner, type) {
-    var cards = []
+  static *_generateOnlineCardsOfTypeForTeam(owner, type) {
     for (let i = 0; i < 4; i++) {
-      cards.push(new Card({
+      yield new Card({
         type: type,
         owner: owner
-      }))
+      })
     }
-    return cards
   }
 
 }
-
-module.exports = Card

@@ -1,66 +1,63 @@
+'use strict'
 
-var assert = require('assert')
-var Board = require('./board')
-var Card = require('./card')
-var Team = require('./team')
-var Move = require('./move')
-var TerminalCardType = require('./terminal-card-type')
-var OnlineCardType = require('./online-card-type')
-var values = require('./util/values')
-var getEnemyTeam = require('./get-enemy-team')
-
-const teams = values(Team)
-const terminalCardTypes = values(TerminalCardType)
-const onlineCardTypes = values(OnlineCardType)
+const Board = require('./board')
+const Card = require('./card')
+const getEnemyTeam = require('./get-enemy-team')
+const OnlineCardType = require('./online-card-type')
+const Team = require('./team')
+const TerminalCardType = require('./terminal-card-type')
 
 /**
- * The game state.
- * @class
- * @memberof RaiNet
+ * Initializes a new instance of `GameState`.
+ * @class GameState
+ * @classdesc The game state.
  */
-class GameState {
+module.exports = class GameState {
 
   constructor() {
 
     // Initialize cards.
-    var cards = {}
-    cards[Team.top] = []
-    cards[Team.bottom] = []
-    this._cards = Object.seal(cards)
+    let cards = new Map(
+      [
+        [Team.top, []],
+        [Team.bottom, []]
+      ]
+    )
+    this._cards = cards
 
     // Initialize terminal card state.
-    var terminalCardState = {}
-    for (let team of teams) {
-      let o = {}
-      for (let type of terminalCardTypes) {
-        o[type] = false
+    let terminalCardState = new Map()
+    for (let team of Team.values()) {
+      let state = new Map()
+      for (let type of TerminalCardType.values()) {
+        state.set(type, false)
       }
-      terminalCardState[team] = Object.seal(o)
+      terminalCardState.set(team, state)
     }
-    this._terminalCardState = Object.seal(terminalCardState)
+    this._terminalCardState = terminalCardState
 
-    var lineBoostLocation = {}
-    for (let team of teams) {
-      lineBoostLocation[team] = null
+    let lineBoostLocation = new Map()
+    for (let team of Team.values()) {
+      lineBoostLocation.set(team, null)
     }
-    this._lineBoostLocation = Object.seal(lineBoostLocation)
+    this._lineBoostLocation = lineBoostLocation
 
-    var firewallLocation = {}
-    for (let team of teams) {
-      firewallLocation[team] = null
+    let firewallLocation = new Map()
+    for (let team of Team.values()) {
+      firewallLocation.set(team, null)
     }
-    this._firewallLocation = Object.seal(firewallLocation)
+    this._firewallLocation = firewallLocation
 
     // Initialize card score.
-    var cardScore = {}
-    for (let team of teams) {
-      let o = {}
-      for (let type of onlineCardTypes) {
-        o[type] = 0
+    let cardScore = new Map()
+    for (let team of Team.values()) {
+      let o = new Map()
+      for (let type of OnlineCardType.values()) {
+        o.set(type, 0)
       }
-      cardScore[team] = Object.seal(o)
+      cardScore.set(team, o)
     }
-    this._cardScore = Object.seal(cardScore)
+    this._cardScore = cardScore
 
     this._board = new Board()
     this._startingPlayer = null
@@ -69,170 +66,229 @@ class GameState {
 
   /**
    * Initializes the GameState to a starting state.
-   * @param {Object} args
-   * @param {?Symbol} [args.startingTeam] The starting team.
-   * @param {Object.<Symbol, number[]>} args.arrangement The arrangement, where each array element indicates the number of link cards to put before each virus card.
+   * @function initialize
+   * @memberof GameState.prototype
+   * @param {Object} opts
+   * @param {?Symbol} [opts.startingTeam] {@link Team}
+       The starting team. If null, any team can submit their first move.
+   * @param {Map.<Symbol, number[]>} opts.arrangement
+   *   The arrangement for each {@link Team} player, where each array element
+   *   indicates the number of link cards to put before each virus card.
    */
-  initialize(args) {
+  initialize(opts) {
 
-    var arrangement = args.arrangement
-    var startingPlayer = args.startingPlayer
-
-    assert(typeof(args) === 'object', "Invalid argument: args")
-    assert(startingPlayer == null || typeof(Team[startingPlayer]) === 'string', "Invalid argument: args.startingPlayer")
-    assert(typeof(arrangement) === 'object', "Invalid argument: args.arrangement")
-    assert(Array.isArray(arrangement[Team.top]), "Invalid argument: args.arrangement[Team.top]")
-    assert(Array.isArray(arrangement[Team.bottom]), "Invalid argument: args.arrangement[Team.bottom]")
-
-    if (arrangement != null) {
-      this.cards[Team.top] = generateForArrangement(arrangement, Team.top)
-      this.cards[Team.bottom] = generateForArrangement(arrangement, Team.bottom)
-    }
-    else {
-      for (let team of teams) {
-        this.cards[team] = Card.generateOnlineCardsForTeam(team)
-      }
+    if (typeof opts !== 'object') {
+      throw new TypeError("args must be an object")
     }
 
-    var topToPlace = [].concat(this.cards[Team.top])
-    var bottomToPlace = [].concat(this.cards[Team.bottom])
-    for (let team of teams) {
-      let toPlace = this.cards[team].slice()
-      for (let square of this.board.startingSquares[team]) {
+    let { arrangement, startingTeam } = opts
+
+    if (!(arrangement instanceof Map)) {
+      throw new TypeError("opts.arrangement must be a Map")
+    }
+    if (!(startingTeam == null || Team.hasValue(startingTeam) === 'string')) {
+      throw new TypeError("opts.startingPlayer must be a member of Team")
+    }
+
+    for (let team of Team.values()) {
+      this.cards.set(team, generateForArrangement(arrangement, team))
+    }
+
+    for (let team of Team.values()) {
+      let toPlace = this.cards.get(team).slice()
+      for (let square of this.board.startingSquares.get(team)) {
         square.card = toPlace.shift()
       }
     }
 
-    if (startingPlayer != null)
-      this.turn = startingPlayer
-    this._startingPlayer = startingPlayer
+    if (startingTeam != null) {
+      this.turn = startingTeam
+    }
+    this._startingTeam = startingTeam
   }
 
   /**
    * The game board.
-   * @returns {Board}
+   * @var {Board} board
+   * @memberof GameState.prototype
+   * @readonly
    */
   get board() {
     return this._board
   }
 
   /**
-   * The online cards owned by each player.
-   * @returns {Object.<Symbol, Card>} Team => Card
+   * The online cards owned by each {@link Team} player.
+   * @var {Map.<Symbol, Card[]>} cards
+   * @memberof GameState.prototype
+   * @readonly
    */
   get cards() {
     return this._cards
   }
 
   /**
-   * The starting player.
-   * @returns {?Symbol} Team
+   * {@link Team} The starting player.
+   * @var {?Symbol} startingPlayer
+   * @memberof GameState.prototype
+   * @deprecated
+   * @readonly
    */
   get startingPlayer() {
-    return this._startingPlayer
+    return this._startingTeam
   }
 
   /**
-   * The player whose turn it is.
-   * @returns {?Symbol} Team
+   * {@link Team} The starting player.
+   * @var {?Symbol} startingTeam
+   * @memberof GameState.prototype
+   * @readonly
+   */
+  get startingTeam() {
+    return this._startingTeam
+  }
+
+  /**
+   * {@link Team} The player whose turn it is.
+   * Value can be null from `startingPlayer = null` but cannot be set to `null`.
+   * Throws `TypeError`.
+   * @var {?Symbol} turn
+   * @memberof GameState.prototype
    */
   get turn() {
     return this._turn
   }
-  /** @param {?Symbol} value Team The value. Note: null assignment not allowed. */
   set turn(value) {
-    assert(typeof(Team[value]) === 'string')
+    if (!Team.hasValue(value)) {
+      throw new TypeError("turn must be a member of Team")
+    }
     this._turn = value
   }
 
   /**
    * The moves done so far on the game.
-   * @returns {Move[]}
+   * @var {Move[]} moves
+   * @memberof GameState.prototype
+   * @readonly
    */
   get moves() {
     return this._moves
   }
 
   /**
-   * The state of each terminal card.
-   * Set to true if the card is installed or consumed, false otherwise.
-   * @returns {Object.<Symbol, Object.<Symbol, boolean>>} Team => TerminalCardType => boolean
+   * The state of each terminal card keyed by {@link Team} player.
+   * True if the card is installed or consumed.
+   * @var {Map.<Symbol, Map.<TerminalCardType, boolean>>} terminalCardState
+   * @memberof GameState.prototype
+   * @readonly
    */
   get terminalCardState() {
     return this._terminalCardState
   }
 
   /**
-   * Convenience variable to look up the current square of the line boost card.
-   * @returns {Object.<Symbol, Square>} Team => Square
+   * Returns the current square of the line boost card,
+   * keyed by {@link Team} player.
+   * @var {Map.<Symbol, Square>} lineBoostLocation
+   * @memberof GameState.prototype
+   * @readonly
    */
   get lineBoostLocation() {
     return this._lineBoostLocation
   }
 
   /**
-   * Convenience variable to look up the current square of the firewall card.
-   * @returns {Object.<Symbol, Square>} Team => Square
+   * Returns the current square of the firewall card.
+   * @var {Map.<Symbol, Square>} firewallLocation
+   * @memberof GameState.prototype
+   * @readonly
    */
   get firewallLocation() {
     return this._firewallLocation
   }
 
   /**
-   * The card score of each player.
-   * @returns {Object.<Symbol, Object.<Symbol, number>>} Team => OnlineCardType => number
+   * The card score of each player,
+   * keyed by {@link Team} player then by `OnlineCardType`.
+   * @var {Map.<Symbol, Map.<Symbol, number>>} cardScore
+   * @memberof GameState.prototype
+   * @readonly
    */
   get cardScore() {
     return this._cardScore
   }
 
   /**
-   * The winner of the game.
-   * @returns {?Symbol} Team
+   * {@link Team} The winner of the game.
+   * @var {?Symbol} winner
+   * @memberof GameState.prototype
+   * @readonly
    */
   get winner() {
-    if (this._winner)
+    if (this.winnerBySurrender) {
+      return this.winnerBySurrender
+    }
+    if (this._winner) {
       return this._winner
-    for (let team of teams) {
-      if (this.cardScore[team][OnlineCardType.link] >= 4) {
+    }
+    for (let team of Team.values()) {
+      if (this.cardScore.get(team).get(OnlineCardType.link) >= 4) {
         this._winner = team
         return team
       }
-      if (this.cardScore[team][OnlineCardType.virus] >= 4) {
-        return getEnemyTeam(team)
+      if (this.cardScore.get(team).get(OnlineCardType.virus) >= 4) {
+        let enemy = getEnemyTeam(team)
+        this._winner = enemy
+        return enemy
       }
     }
-    return null
   }
 
-  get winnerBySurrender() { return this._winnerBySurrender }
-  set winnerBySurrender(value) { this._winnerBySurrender = value }
-  
+  /**
+   * {@link Team} The winner of the game when the other player surrenders.
+   * Can be null but cannot be set to null. Throws `TypeError`.
+   * @var {?Symbol}
+   */
+  get winnerBySurrender() {
+    return this._winnerBySurrender
+  }
+  set winnerBySurrender(value) {
+    if (!Team.hasValue(value)) {
+      throw new TypeError("winnerBySurrender must a member of Team")
+    }
+    this._winnerBySurrender = value
+  }
+
 }
 
 /**
- * @param {Object} arrangementObj
+ * @function {Card[]} generateForArrangement
+ * @access private
+ * @param {Map} arrangementObj
  * @param {Symbol} team
- * @returns {Card[]}
  */
 function generateForArrangement(arrangementObj, team) {
 
-  var arrangement = arrangementObj[team]
+  let arrangement = arrangementObj.get(team)
 
-  if (!Array.isArray(arrangement))
-    arrangement = []
+  arrangement = Array.from(arrangement)
 
-  var cards = []
-  var linkCards = Card.generateOnlineCardsForTeam(team, OnlineCardType.link)
-  var virusCards = Card.generateOnlineCardsForTeam(team, OnlineCardType.virus)
+  let cards = []
+  let linkCards = Array.from(
+    Card.generateOnlineCardsForTeam(team, OnlineCardType.link)
+  )
+  let virusCards = Array.from(
+    Card.generateOnlineCardsForTeam(team, OnlineCardType.virus)
+  )
 
   for (let i = 0; i < arrangement.length; i++) {
 
     let linkCount = arrangement[i]
-    assert(typeof(linkCount) === 'number')
+    if (!Number.isFinite(linkCount) || linkCount < 0) {
+      throw new TypeError("invalid number for arrangement element")
+    }
 
     for (let j = 0; j < linkCount; j++) {
-
       let linkCard = linkCards.pop()
       if (linkCard === undefined) {
         break
@@ -249,5 +305,3 @@ function generateForArrangement(arrangementObj, team) {
   cards = cards.concat(linkCards)
   return cards
 }
-
-module.exports = GameState

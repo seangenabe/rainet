@@ -1,13 +1,12 @@
+'use strict'
 
-var Enum = require('symbol-enum')
+const Enum = require('symbol-enum')
 
 /**
  * Distinguishes between players.
- * @type {Enum}
- * @memberof RaiNet
- * @property {Symbol} top
- * @property {Symbol} bottom
+ * @var {external:SymbolEnum} Team
+ * @kind constant
+ * @property {Symbol} top Player Top (yellow)
+ * @property {Symbol} bottom Player Bottom (blue)
  */
-var Team = new Enum('top', 'bottom')
-
-module.exports = Team
+module.exports = new Enum('top', 'bottom')

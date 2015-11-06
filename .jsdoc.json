@@ -1,0 +1,6 @@
+{
+  "plugins": [
+    "node_modules/jsdoc/plugins/commentsOnly.js",
+    "node_modules/jsdoc/plugins/markdown.js"
+  ]
+}

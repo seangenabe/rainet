@@ -1,25 +1,22 @@
+'use strict'
 
-var assert = require('assert')
-var Grid = require('./grid')
-var Square = require('./square')
-var Location = require('./location')
-var Team = require('./team')
-var Direction = require('./direction')
-var values = require('./util/values')
-
-const teams = values(Team)
-const directions = values(Direction)
+const Direction = require('./direction')
+const Grid = require('./grid')
+const Location = require('./location')
+const Square = require('./square')
+const Team = require('./team')
 
 /**
- * The game board
- * @class
- * @memberof RaiNet
+ * @classdesc The game board
+ * @class Board
  */
-class Board {
+module.exports = class Board {
 
   /**
    * The grid.
-   * @returns {Grid}
+   * @var {Grid} grid
+   * @readonly
+   * @memberof Board.prototype
    */
   get grid() {
     return this._grid
@@ -27,7 +24,9 @@ class Board {
 
   /**
    * Server squares, keyed by team.
-   * @returns {Object.<Symbol, Square>}
+   * @var {Map.<Symbol, Square>} server
+   * @readonly
+   * @memberof Board.prototype
    */
   get server() {
     return this._server
@@ -35,7 +34,9 @@ class Board {
 
   /**
    * Stack areas, keyed by team.
-   * @returns {Object.<Symbol, StackedOnlineCard[]>}
+   * @var {Map.<Symbol, StackedOnlineCard[]>} stackArea
+   * @readonly
+   * @memberof Board.prototype
    */
   get stackArea() {
     return this._stackArea
@@ -43,7 +44,9 @@ class Board {
 
   /**
    * Starting squares, keyed by team.
-   * @returns {Object.<Symbol, Square[]>}
+   * @var {Map.<Symbol, Square[]>} startingSquares
+   * @readonly
+   * @memberof Board.prototype
    */
   get startingSquares() {
     return this._grid.startingSquares
@@ -55,16 +58,16 @@ class Board {
     this._grid = new Grid()
 
     // Initialize server.
-    this._server = {}
-    for (let team of teams) {
-      var serverSquare = new Square(Location.null)
-      this._server[team] = serverSquare
+    this._server = new Map()
+    for (let team of Team.values()) {
+      let serverSquare = new Square(Location.null)
+      this._server.set(team, serverSquare)
     }
 
     // Initialize stack area.
-    this._stackArea = {}
-    for (let team of teams) {
-      this._stackArea[team] = []
+    this._stackArea = new Map()
+    for (let team of Team.values()) {
+      this._stackArea.set(team, [])
     }
 
     // Initialize lookup for grid.
@@ -72,52 +75,36 @@ class Board {
       for (let colIndex = 0; colIndex < 8; colIndex++) {
         ((rowIndex, colIndex) => {
           let location = new Location(rowIndex, colIndex)
-          var sq = this._grid.lookup(location)
+          let sq = this._grid.lookup(location)
 
-          for (let direction of directions) {
-            sq.adjacentSquares[direction] = this._grid.lookup(Location.shift(location, direction))
+          for (let direction of Direction.values()) {
+            sq.adjacentSquares.set(
+              direction,
+              this._grid.lookup(Location.shift(location, direction))
+            )
           }
         })(rowIndex, colIndex)
       }
     }
 
     // Connect grid to server squares.
-    for (let args of [
-      [0, 3, Direction.up, Team.top],
-      [0, 4, Direction.up, Team.top],
-      [7, 3, Direction.down, Team.bottom],
-      [7, 4, Direction.down, Team.bottom]
-    ]) {
-      this._setServerAdjacent.apply(this, args)
-    }
-
-    // Lock squares.
-    for (let square of this._grid.squares) {
-      square.endInitialize()
-    }
-    for (let team of teams) {
-      this._server[team].endInitialize()
-    }
+    this._setServerAdjacent(0, 3, Direction.up, Team.top)
+    this._setServerAdjacent(0, 4, Direction.up, Team.top)
+    this._setServerAdjacent(7, 3, Direction.up, Team.bottom)
+    this._setServerAdjacent(7, 4, Direction.up, Team.bottom)
   }
 
   /**
    * Convenience method to create connections between grid squares and server squares.
+   * @ignore
    * @param {number} row
    * @param {number} col
    * @param {Symbol} direction Direction
    * @param {Symbol} team Team
-   * @private
    */
   _setServerAdjacent(row, col, direction, team) {
-
-    assert(typeof(row) === 'number')
-    assert(typeof(col) === 'number')
-    assert(typeof(Direction[direction]) === 'string')
-    assert(typeof(Team[team]) === 'string')
-
-    this._grid.columns[col][row].adjacentSquares[direction] = this._server[team]
+    this._grid.columns[col][row]
+      .adjacentSquares[direction] = this._server[team]
   }
 
 }
-
-module.exports = Board

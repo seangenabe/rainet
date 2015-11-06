@@ -1,15 +1,19 @@
+'use strict'
 
-var Enum = require('symbol-enum')
+const Enum = require('symbol-enum')
 
 /**
  * Distinguishes among Terminal Cards.
- * @type {Enum}
- * @memberof RaiNet
- * @property {Symbol} lineBoost
- * @property {Symbol} firewall
- * @property {Symbol} notFound
- * @property {Symbol} virusCheck
+ * @var {external:SymbolEnum} TerminalCardType
+ * @kind constant
+ * @property {Symbol} lineBoost Line Boosts
+ * @property {Symbol} firewall Firewall
+ * @property {Symbol} notFound 404 Not Found
+ * @property {Symbol} virusCheck Virus Check
  */
-var TerminalCardType = new Enum('lineBoost', 'firewall', 'notFound', 'virusCheck')
-
-module.exports = TerminalCardType
+module.exports = new Enum(
+  'lineBoost',
+  'firewall',
+  'notFound',
+  'virusCheck'
+)

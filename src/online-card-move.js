@@ -1,31 +1,35 @@
+'use strict'
 
-var assert = require('assert')
-var Move = require('./move')
-var Direction = require('./direction')
-var values = require('./util/values')
-
-const directions = values(Direction)
+const Direction = require('./direction')
+const Move = require('./move')
 
 /**
- * A move involving an online card.
- * @class
- * @memberof RaiNet
+ * Initializes a new instance of `OnlineCardMove`.
+ * @class OnlineCardMove
+ * @classdesc A move involving an online card.
  * @param {Object} opts
+ * @param {Symbol} opts.team Passed to {@link Move|Move constructor}
+ * @param {Square} [opts.square] Passed to {@link Move|Move constructor}
  * @param {Symbol} opts.direction Direction
  * @param {Symbol} [opts.direction2] Direction
  * @param {boolean} [opts.revealCard] Whether to reveal the card, if a server move. Defaults to `false`.
  */
-class OnlineCardMove extends Move {
+module.exports = class OnlineCardMove extends Move {
 
   constructor(opts) {
     super(opts)
 
-    var direction = opts.direction, direction2 = opts.direction2, revealCard = opts.revealCard
+    let { direction, direction2, revealCard } = opts
 
-    assert(typeof Direction[direction] === 'string', "Invalid argument: opts.direction")
-    assert(direction2 == null || typeof Direction[direction2] === 'string', "Invalid argument: opts.direction2")
-    revealCard = revealCard || false
-    assert(typeof revealCard === 'boolean', "Invalid argument: opts.revealCard")
+    if (!Direction.hasValue(direction)) {
+      throw new TypeError("opts.direction must be a member of Direction")
+    }
+    if (!(direction2 == null || Direction.hasValue(direction2))) {
+      throw new TypeError(
+        "opts.direction2 must be a nullable member of Direction"
+      )
+    }
+    revealCard = !!revealCard
 
     this._direction = direction
     this._direction2 = direction2
@@ -33,8 +37,10 @@ class OnlineCardMove extends Move {
   }
 
   /**
-   * The direction of this move.
-   * @returns {Symbol} Direction
+   * {@link Direction} The direction of this move.
+   * @var {Symbol} direction
+   * @memberof OnlineCardMove.prototype
+   * @readonly
    */
   get direction() {
     return this._direction
@@ -42,7 +48,9 @@ class OnlineCardMove extends Move {
 
   /**
    * The direction of the second move, as allowed by a Line Boost terminal card.
-   * @returns {?Symbol} Direction
+   * @var {?Symbol} direction2
+   * @memberof OnlineCardMove.prototype
+   * @readonly
    */
   get direction2() {
     return this._direction2
@@ -50,12 +58,12 @@ class OnlineCardMove extends Move {
 
   /**
    * Whether to reveal the card, if a server move.
-   * @returns {boolean}
+   * @var {boolean} revealCard
+   * @memberof OnlineCardMove.prototype
+   * @readonly
    */
   get revealCard() {
     return this._revealCard
   }
 
 }
-
-module.exports = OnlineCardMove
