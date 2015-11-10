@@ -36,18 +36,6 @@ module.exports = class GameState {
     }
     this._terminalCardState = terminalCardState
 
-    let lineBoostLocation = new Map()
-    for (let team of Team.values()) {
-      lineBoostLocation.set(team, null)
-    }
-    this._lineBoostLocation = lineBoostLocation
-
-    let firewallLocation = new Map()
-    for (let team of Team.values()) {
-      firewallLocation.set(team, null)
-    }
-    this._firewallLocation = firewallLocation
-
     // Initialize card score.
     let cardScore = new Map()
     for (let team of Team.values()) {
@@ -177,34 +165,14 @@ module.exports = class GameState {
 
   /**
    * The state of each terminal card keyed by {@link Team} player.
-   * True if the card is installed or consumed.
-   * @var {Map.<Symbol, Map.<TerminalCardType, boolean>>} terminalCardState
+   * Falsy if the card is not installed or consumed.
+   * For line boost and firewall, the relevant {@link Square} square.
+   * @var {Map.<Symbol, Map.<TerminalCardType, ?(Square|boolean)>>} terminalCardState
    * @memberof GameState.prototype
    * @readonly
    */
   get terminalCardState() {
     return this._terminalCardState
-  }
-
-  /**
-   * Returns the current square of the line boost card,
-   * keyed by {@link Team} player.
-   * @var {Map.<Symbol, Square>} lineBoostLocation
-   * @memberof GameState.prototype
-   * @readonly
-   */
-  get lineBoostLocation() {
-    return this._lineBoostLocation
-  }
-
-  /**
-   * Returns the current square of the firewall card.
-   * @var {Map.<Symbol, Square>} firewallLocation
-   * @memberof GameState.prototype
-   * @readonly
-   */
-  get firewallLocation() {
-    return this._firewallLocation
   }
 
   /**

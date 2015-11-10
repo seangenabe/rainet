@@ -105,6 +105,7 @@ module.exports = class Game {
       }
     }
 
+    let terminalCardState_team = terminalCardState.get(team)
     let currentSquare = move.source // can be null when move.uninstall === true
     let card = currentSquare ? currentSquare.card : null;
 
@@ -157,7 +158,7 @@ module.exports = class Game {
         // Check if not installed / already installed.
         // (Condensed version that accounts for both installation
         //  and uninstallation using an XOR (!=))
-        let isInstalled = terminalCardState.get(team).has(move.cardType)
+        let isInstalled = terminalCardState_team.has(move.cardType)
         if (move.uninstall !== isInstalled) {
           throw new InvalidMoveError("Terminal card is already installed / uninstalled.")
         }
@@ -167,7 +168,7 @@ module.exports = class Game {
           if (move.uninstall) {
 
             // Get the card on the square.
-            card = state.lineBoostLocation.get(team).card
+            card = terminalCardState_team.get(TerminalCardType.lineBoost).card
 
             // Uninstall line boost.
             this._uninstallLineBoostCore(team, card)
@@ -188,9 +189,7 @@ module.exports = class Game {
             }
 
             // Install line boost.
-            state.lineBoostLocation.set(team, currentSquare)
-            terminalCardState.get(team)
-              .set(TerminalCardType.lineBoost, true)
+            terminalCardState_team.set(TerminalCardType.lineBoost, currentSquare)
 
             card.lineBoosted = true
           }
@@ -201,10 +200,9 @@ module.exports = class Game {
           if (move.uninstall) {
 
             // Uninstall firewall.
-            state.firewallLocation.get(team).firewall = null
-            state.firewallLocation.set(team, null)
-            terminalCardState.get(team)
-              .set(TerminalCardType.firewall, false)
+            terminalCardState_team.get(TerminalCardType.firewall)
+              .firewall = null
+            terminalCardState_team.set(TerminalCardType.firewall, null)
           }
           else {
 
@@ -220,9 +218,7 @@ module.exports = class Game {
 
             // Install firewall.
             currentSquare.firewall = team
-            state.firewallLocation.set(team, currentSquare)
-            terminalCardState.get(team)
-              .set(TerminalCardType.firewall, false)
+            terminalCardState_team.set(TerminalCardType.firewall, currentSquare)
           }
         }
         else {
@@ -498,7 +494,8 @@ module.exports = class Game {
     move.destinationSquare.card = card
     source.card = null
     // Update line boost location.
-    this.state.lineBoostLocation.set(team, move.destinationSquare)
+    this.state.terminalCardState.get(team)
+      .set(TerminalCardType.lineBoost, move.destinationSquare)
 
     return ret
   }
@@ -513,8 +510,8 @@ module.exports = class Game {
    * @param {Card} card
    */
   _uninstallLineBoostCore(team, card) {
-    this.state.terminalCardState.get(team).set(TerminalCardType.lineBoost, false)
-    this.state.lineBoostLocation.delete(team)
+    this.state.terminalCardState.get(team)
+      .set(TerminalCardType.lineBoost, null)
     card.lineBoosted = false
   }
 
