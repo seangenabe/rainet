@@ -20,7 +20,7 @@
   "dependencies": {
     "lodash.assign": "^3.2.0",
     "make-error": "^0.3.0",
-    "symbol-enum": "^3.2.2"
+    "symbol-enum": "~3.2.2-0"
   },
   "devDependencies": {
     "babel-cli": "^6.1.1",
