@@ -2,7 +2,6 @@
   "name": "rainet",
   "version": "1.0.1-0",
   "description": "A JavaScript implementation of 5pb.'s game RaiNet Access Battlers.",
-  "private": "true",
   "main": "src",
   "scripts": {
     "test": "node node_modules/mocha/bin/_mocha --compilers js:babel-core/register src/test",
