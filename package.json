@@ -5,16 +5,14 @@
   "private": "true",
   "main": "lib",
   "scripts": {
-    "test": "node --harmony_rest_parameters node_modules/mocha/bin/_mocha --compilers js:babel-core/register src/test",
-    "compile": "babel --out-dir lib src",
-    "watch": "npm run compile -- --watch",
+    "test": "node node_modules/mocha/bin/_mocha --compilers js:babel-core/register src/test",
     "jsdoc": "jsdoc -c .jsdoc.json --readme readme.md --destination docs src",
     "jsdoc:watch": "chokidar --command \"npm run jsdoc\" src"
   },
   "author": "Sean Genabe <seangenabe@outlook.com>",
   "license": "MIT",
   "engines": {
-    "node": ">=5",
+    "node": ">=6",
     "npm": ">=2"
   },
   "dependencies": {
@@ -23,19 +21,9 @@
     "symbol-enum": "~3.2.2-0"
   },
   "devDependencies": {
-    "babel-cli": "^6.1.1",
-    "babel-core": "^6.1.2",
-    "babel-plugin-transform-es2015-destructuring": "^6.0.18",
     "chai": "^1.9.2",
     "chokidar-cli": "^1.1.1",
-    "glob": "^5.0.15",
     "jsdoc": "^3.3.3",
-    "mkdirp": "^0.5.0",
     "mocha": "^2.0.1"
-  },
-  "babel": {
-    "plugins": [
-      "transform-es2015-destructuring"
-    ]
   }
 }
