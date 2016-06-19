@@ -1,7 +1,7 @@
 'use strict'
 
 const Direction = require('./direction')
-const Move = require('./move')
+const SquareMove = require('./square-move')
 
 /**
  * Initializes a new instance of `OnlineCardMove`.
@@ -9,12 +9,12 @@ const Move = require('./move')
  * @classdesc A move involving an online card.
  * @param {Object} opts
  * @param {Symbol} opts.team Passed to {@link Move|Move constructor}
- * @param {Square} [opts.square] Passed to {@link Move|Move constructor}
+ * @param {Square} opts.square Passed to {@link SquareMove|SquareMove constructor}
  * @param {Symbol} opts.direction Direction
  * @param {Symbol} [opts.direction2] Direction
  * @param {boolean} [opts.revealCard] Whether to reveal the card, if a server move. Defaults to `false`.
  */
-module.exports = class OnlineCardMove extends Move {
+module.exports = class OnlineCardMove extends SquareMove {
 
   constructor(opts) {
     super(opts)

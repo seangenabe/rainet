@@ -8,7 +8,7 @@ const TerminalCardMove = require('./terminal-card-move')
  * @class NotFoundTerminalCardMove
  * @param {Object} opts
  * @param {Symbol} opts.team Passed to {@link Move|Move constructor}
- * @param {Square} [opts.square] Passed to {@link Move|Move constructor}
+ * @param {Square} opts.square Passed to {@link SqaureMove|SquareMove constructor}
  * @param {Symbol} opts.cardType Passed to {@link TerminalCardMove|TerminalCardMove constructor}
  * @param {Square} opts.other The other square.
  * @param {boolean} [opts.swap] Whether to swap the cards.
@@ -16,9 +16,13 @@ const TerminalCardMove = require('./terminal-card-move')
 module.exports = class NotFoundTerminalCardMove extends TerminalCardMove {
 
   constructor(opts) {
+    if (typeof opts !== 'object') {
+      throw new TypeError("opts must be an object")
+    }
+    opts.cardType = TerminalCardType.notFound
     super(opts)
 
-    let {other, swap} = opts
+    let { other, swap } = opts
 
     if (!(other instanceof TerminalCardMove)) {
       throw new TypeError("other must be TerminalCardMove")

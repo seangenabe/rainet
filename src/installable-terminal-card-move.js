@@ -7,7 +7,7 @@ const TerminalCardMove = require('./terminal-card-move')
  * @class InstallableTerminalCardMove
  * @extends TerminalCardMove
  * @param {Object} opts
- * @param {Square} [opts.square] Passed to {@link Move|Move constructor}
+ * @param {Square} opts.square Passed to {@link SquareMove|SquareMove constructor}
  * @param {Symbol} opts.cardType Passed to {@link TerminalCardMove|TerminalCardMove constructor}
  * @param {boolean} opts.uninstall Whether to uninstall the terminal card
      instead of installing it.
