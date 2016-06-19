@@ -2,6 +2,11 @@
 
 RaiNet Access Battlers Javascript implementation
 
+[![npm](https://img.shields.io/npm/v/symbol-enum.svg?style=flat-square)]
+[![Dependency Status](https://img.shields.io/david/seangenabe/symbol-enum.svg?style=flat-square)](https://david-dm.org/seangenabe/symbol-enum)
+[![devDependency Status](https://img.shields.io/david/dev/seangenabe/symbol-enum.svg?style=flat-square)](https://david-dm.org/seangenabe/symbol-enum#info=devDependencies)
+[![node](https://img.shields.io/node/v/symbol-enum.svg?style=flat-square)](https://nodejs.org/en/download/)
+
 ## Example usage
 
 ### Creating game instances
