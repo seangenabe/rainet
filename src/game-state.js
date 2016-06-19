@@ -270,6 +270,7 @@ function generateForArrangement(arrangementObj, team) {
     }
     cards.push(virusCard)
   }
+  cards = cards.concat(virusCards)
   cards = cards.concat(linkCards)
   return cards
 }
