@@ -2,10 +2,10 @@
 
 RaiNet Access Battlers Javascript implementation
 
-[![npm](https://img.shields.io/npm/v/symbol-enum.svg?style=flat-square)]
-[![Dependency Status](https://img.shields.io/david/seangenabe/symbol-enum.svg?style=flat-square)](https://david-dm.org/seangenabe/symbol-enum)
-[![devDependency Status](https://img.shields.io/david/dev/seangenabe/symbol-enum.svg?style=flat-square)](https://david-dm.org/seangenabe/symbol-enum#info=devDependencies)
-[![node](https://img.shields.io/node/v/symbol-enum.svg?style=flat-square)](https://nodejs.org/en/download/)
+[![npm](https://img.shields.io/npm/v/rainet.svg?style=flat-square)]
+[![Dependency Status](https://img.shields.io/david/seangenabe/rainet.svg?style=flat-square)](https://david-dm.org/seangenabe/rainet)
+[![devDependency Status](https://img.shields.io/david/dev/seangenabe/rainet.svg?style=flat-square)](https://david-dm.org/seangenabe/rainet#info=devDependencies)
+[![node](https://img.shields.io/node/v/rainet.svg?style=flat-square)](https://nodejs.org/en/download/)
 
 ## Example usage
 
@@ -22,7 +22,7 @@ The game will be created with some initial state, provided at `game.state`. This
 
 Terminology: Here "team" is used to indicate the playing sides of the game, even if there is only one player in each.
 
-Enums are provided by the `symbol-enum` module.
+Enums are provided by the `rainet` module.
 
 To start the game, pass an object to `game.start()`:
 * `startingTeam`: Starting team. Can be unspecified, in which case any player can make the first move.
