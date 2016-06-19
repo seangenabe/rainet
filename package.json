@@ -4,7 +4,7 @@
   "description": "A JavaScript implementation of 5pb.'s game RaiNet Access Battlers.",
   "main": "src",
   "scripts": {
-    "test": "node node_modules/mocha/bin/_mocha --compilers js:babel-core/register src/test",
+    "test": "tap test/*.js",
     "jsdoc": "jsdoc -c .jsdoc.json --readme readme.md --destination docs src",
     "jsdoc:watch": "chokidar --command \"npm run jsdoc\" src"
   },
@@ -17,12 +17,11 @@
   "dependencies": {
     "lodash.assign": "^3.2.0",
     "make-error": "^0.3.0",
-    "symbol-enum": "~3.2.2-0"
+    "symbol-enum": "^4.0.2"
   },
   "devDependencies": {
-    "chai": "^1.9.2",
     "chokidar-cli": "^1.1.1",
     "jsdoc": "^3.4.0",
-    "mocha": "^2.0.1"
+    "tap": "^5.7.2"
   }
 }
