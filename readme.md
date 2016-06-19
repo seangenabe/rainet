@@ -151,6 +151,12 @@ game.state.board.grid.columns[4][6].card.revealed // false
 game.state.board.grid.columns[5][6].card.revealed // false
 ```
 
+**Surrender**
+
+```javascript
+game.submitMove(new SurrenderMove({ team: Team.bottom }))
+```
+
 ### Wrap-up
 
 This is pretty much what's needed to interact with the module. Feel free to consult the full documentation / source code.
