@@ -1,6 +1,7 @@
 'use strict'
 
 const Move = require('./move')
+const Square = require('./square')
 
 /**
  * @class SquareMove

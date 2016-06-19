@@ -1,6 +1,6 @@
 'use strict'
 
-const Move = require('./move')
+const SquareMove = require('./square-move')
 const TerminalCardType = require('./terminal-card-type')
 
 /**

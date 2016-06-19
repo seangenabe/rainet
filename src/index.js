@@ -20,8 +20,10 @@ module.exports = {
   OnlineCardMove: require('./online-card-move'),
   OnlineCardType: require('./online-card-type'),
   Square: require('./square'),
+  SquareMove: require('./square-move'),
   StackCause: require('./stack-cause'),
   StackedOnlineCard: require('./stacked-online-card'),
+  SurrenderMove: require('./surrender-move'),
   Team: require('./team'),
   TerminalCardMove: require('./terminal-card-move'),
   TerminalCardType: require('./terminal-card-type')
