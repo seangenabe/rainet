@@ -157,7 +157,7 @@ module.exports = class Game {
         // Check if not installed / already installed.
         // (Condensed version that accounts for both installation
         //  and uninstallation using an XOR (!=))
-        let isInstalled = terminalCardState_team.get(move.cardType)
+        let isInstalled = Boolean(terminalCardState_team.get(move.cardType))
         if (move.uninstall !== isInstalled) {
           throw new InvalidMoveError("Terminal card is already installed / uninstalled.")
         }
