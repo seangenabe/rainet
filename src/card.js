@@ -39,7 +39,9 @@ module.exports = class Card {
 
     this._type = type
     this._owner = owner
-
+    this._revealed = false
+    this._lineBoosted = false
+    
     Object.seal(this)
   }
 
