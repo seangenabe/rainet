@@ -64,7 +64,6 @@ module.exports = class Game {
    * @throws {TypeError}
    */
   submitMove(move) {
-
     let { state } = this
     let { terminalCardState } = state
 
@@ -189,6 +188,7 @@ module.exports = class Game {
             }
 
             // Install line boost.
+            console.log("INSTALLING LINE BOOST 1") // DEBUG
             terminalCardState_team.set(TerminalCardType.lineBoost, currentSquare)
 
             card.lineBoosted = true
@@ -439,7 +439,7 @@ module.exports = class Game {
       source.card = null
 
       // Add to stack.
-      var stacked = new StackedOnlineCard(card, StackCause.infiltrated)
+      let stacked = new StackedOnlineCard(card, StackCause.infiltrated)
       this.state.board.stackArea.get(team).push(stacked)
       ret.deltaStackArea = [{owner: team, stacked: stacked}]
 
@@ -457,14 +457,14 @@ module.exports = class Game {
     }
     if (move.capture) {
 
-      var enemyCard = move.destinationSquare.card
-      var enemy = enemyCard.owner
+      let enemyCard = move.destinationSquare.card
+      let enemy = enemyCard.owner
 
       // Reveal card.
       enemyCard.revealed = true
 
       // Add to stack.
-      var enemyStacked = new StackedOnlineCard(card, StackCause.captured)
+      let enemyStacked = new StackedOnlineCard(card, StackCause.captured)
       this.state.board.stackArea.get(team).push(enemyStacked)
       ret.deltaStackArea = [{owner: team, stacked: enemyStacked}]
 
@@ -494,8 +494,10 @@ module.exports = class Game {
     move.destinationSquare.card = card
     source.card = null
     // Update line boost location.
-    this.state.terminalCardState.get(team)
-      .set(TerminalCardType.lineBoost, move.destinationSquare)
+    if (card.lineBoosted) {
+      this.state.terminalCardState.get(team)
+        .set(TerminalCardType.lineBoost, move.destinationSquare)
+    }
 
     return ret
   }
