@@ -64,7 +64,6 @@ module.exports = class Game {
    * @throws {TypeError}
    */
   submitMove(move) {
-    console.log('move', require('util').inspect(move, { colors: true })) // DEBUG
     let { state } = this
     let { terminalCardState } = state
 
@@ -158,7 +157,6 @@ module.exports = class Game {
         // Check if not installed / already installed.
         // (Condensed version that accounts for both installation
         //  and uninstallation using an XOR (!=))
-        console.log('terminalCardState_team', require('util').inspect(terminalCardState_team, { colors: true })) // DEBUG
         let isInstalled = terminalCardState_team.get(move.cardType)
         if (move.uninstall !== isInstalled) {
           throw new InvalidMoveError("Terminal card is already installed / uninstalled.")
@@ -190,7 +188,6 @@ module.exports = class Game {
             }
 
             // Install line boost.
-            console.log("INSTALLING LINE BOOST 1") // DEBUG
             terminalCardState_team.set(TerminalCardType.lineBoost, currentSquare)
 
             card.lineBoosted = true
