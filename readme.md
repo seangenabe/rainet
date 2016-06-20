@@ -122,11 +122,15 @@ game.state.board.stackArea.get(Team.top)[0].card.revealed // true
 game.submitMove(new InstallableTerminalCardMove({
   team: Team.bottom,
   square: game.state.board.grid.lookup(new Location(4, 6)),
+  cardType: TerminalCardType.lineBoost
+}))
+
+game.submitMove(new InstallableTerminalCardMove({
+  team: Team.bottom,
   cardType: TerminalCardType.lineBoost,
-  uninstall: false
+  uninstall: true
 }))
 ```
-
 **Use a virus check card**
 
 ```javascript
