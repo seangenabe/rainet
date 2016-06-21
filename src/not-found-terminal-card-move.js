@@ -2,6 +2,7 @@
 
 const TerminalCardMove = require('./terminal-card-move')
 const TerminalCardType = require('./terminal-card-type')
+const Square = reuqire('./square')
 
 /**
  * Initializes a new instance of `NotFoundTerminalCardMove`
