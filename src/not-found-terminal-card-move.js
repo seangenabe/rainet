@@ -1,6 +1,7 @@
 'use strict'
 
 const TerminalCardMove = require('./terminal-card-move')
+const TerminalCardType = require('./terminal-card-type')
 
 /**
  * Initializes a new instance of `NotFoundTerminalCardMove`
