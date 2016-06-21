@@ -1,6 +1,6 @@
 {
   "name": "rainet",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A JavaScript implementation of 5pb.'s game RaiNet Access Battlers.",
   "main": "src",
   "scripts": {
