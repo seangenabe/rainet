@@ -25,8 +25,8 @@ module.exports = class NotFoundTerminalCardMove extends TerminalCardMove {
 
     let { other, swap } = opts
 
-    if (!(other instanceof TerminalCardMove)) {
-      throw new TypeError("other must be TerminalCardMove")
+    if (!(other instanceof Square)) {
+      throw new TypeError("other must be Square")
     }
 
     this._other = other
