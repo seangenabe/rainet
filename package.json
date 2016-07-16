@@ -16,8 +16,8 @@
     "npm": ">=2"
   },
   "dependencies": {
-    "lodash.assign": "^3.2.0",
-    "make-error": "^0.3.0",
+    "lodash.assign": "^4.0.9",
+    "make-error": "^1.1.1",
     "symbol-enum": "^4.0.2"
   },
   "devDependencies": {
