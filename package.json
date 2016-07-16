@@ -5,7 +5,7 @@
   "main": "src",
   "scripts": {
     "test:tap": "tape test/*.test.js",
-    "test": "tape test/*.test.js | tap-diff",
+    "test": "tape test/line-boost.test.js | tap-diff",
     "test:watch": "chokidar --command \"npm test\" test",
     "jsdoc": "jsdoc -c .jsdoc.json --readme readme.md --destination docs src",
     "jsdoc:watch": "chokidar --command \"npm run jsdoc\" src"
@@ -26,6 +26,7 @@
     "jsdoc": "^3.4.0",
     "lodash.partial": "^4.1.4",
     "tap-diff": "^0.1.1",
-    "tape": "^4.6.0"
+    "tape": "^4.6.0",
+    "tape-catch": "^1.0.6"
   }
 }

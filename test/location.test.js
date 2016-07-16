@@ -1,4 +1,4 @@
-const tap = require('tape')
+const tap = require('tape-catch')
 const { Location } = require('..')
 
 tap.test('constructor', t => {

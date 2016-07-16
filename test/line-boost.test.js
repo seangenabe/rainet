@@ -1,5 +1,5 @@
-const t = require('tape')
-const { setup, doMove, doMoves, getSquare } = require('./helpers')
+const t = require('tape-catch')
+const { setup, doMove, getSquare } = require('./helpers')
 const {
   InstallableTerminalCardMove,
   TerminalCardType,
@@ -11,12 +11,15 @@ const partial = require('lodash.partial')
 t.test("line boost", t => {
   const game = setup([[4], [4]])
   const _install = partial(install, game)
+  const _uninstall = partial(uninstall, game)
   const _getSquare = partial(getSquare, game)
   const _doMove = partial(doMove, game)
   const _getInstallSquare = partial(getInstallSquare, game)
 
-  t.notOk(_getInstallSquare('top'))
-  t.notOk(_getInstallSquare('bottom'))
+  t.notOk(_getInstallSquare('top'), "must be uninstalled initially")
+  t.notOk(_getInstallSquare('bottom'), "must be uninstalled initially")
+
+  t.throws(() => _doMove("A8UU"), "cannot move too far when uninstalled")
 
   _install('D2')
   _install('D7')
@@ -45,6 +48,18 @@ t.test("line boost", t => {
   _doMove('D5R')
 
   let m = _doMove('C5RR')
+  t.equals(m.capture.subject, Team.bottom, "move should be a capture")
+  t.equals(_getSquare('E5').card.owner, Team.bottom,
+    "card should be on target square")
+  t.equals(_getInstallSquare('bottom'), _getSquare('E5'),
+    "state must update to target square")
+  t.notOk(_getInstallSquare('top'),
+    "state must revert to uninstalled after capture")
+
+  _doMove('H8D')
+  t.doesNotThrow(() => _uninstall('bottom'),
+    "opts.source must be optional when uninstalling")
+  t.throws(() => _doMove('E5RR'), "cannot move too far when uninstalled")
 
   t.end()
 })
@@ -54,14 +69,17 @@ function getInstallSquare(game, team) {
     .get(TerminalCardType.lineBoost)
 }
 
-function install(game, locationString, uninstall) {
+function install(game, locationString) {
   return doMove(game, new InstallableTerminalCardMove({
-    source: getSquare(game, locationString),
-    cardType: TerminalCardType.lineBoost,
-    uninstall
+    source: locationString && getSquare(game, locationString),
+    cardType: TerminalCardType.lineBoost
   }))
 }
 
-function uninstall(game, locationString) {
-  return install(game, locationString, true)
+function uninstall(game, team) {
+  return doMove(game, new InstallableTerminalCardMove({
+    team: Team[team],
+    cardType: TerminalCardType.lineBoost,
+    uninstall: true
+  }))
 }

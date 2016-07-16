@@ -1,4 +1,4 @@
-const t = require('tape')
+const t = require('tape-catch')
 const {
   OnlineCardMove,
   Team,

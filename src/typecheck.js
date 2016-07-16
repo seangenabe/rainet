@@ -59,7 +59,7 @@ class TypeCheck {
     }
     for (let assertion of this._assertions) {
       if (!assertion.fn(value)) {
-        throw new TypeError(`${message} Actual: ${Util.inspect(value)}`)
+        throw new TypeError(`${assertion.message} Actual: ${Util.inspect(value)}`)
       }
     }
   }
