@@ -4,7 +4,7 @@
   "description": "A JavaScript implementation of 5pb.'s game RaiNet Access Battlers.",
   "main": "src",
   "scripts": {
-    "test": "tap test/*.test.js",
+    "test": "tape test/*.test.js | tap-diff",
     "test:watch": "chokidar --command \"npm test\" test",
     "jsdoc": "jsdoc -c .jsdoc.json --readme readme.md --destination docs src",
     "jsdoc:watch": "chokidar --command \"npm run jsdoc\" src"
@@ -23,6 +23,8 @@
   "devDependencies": {
     "chokidar-cli": "^1.1.1",
     "jsdoc": "^3.4.0",
-    "tap": "^5.7.2"
+    "lodash.partial": "^4.1.4",
+    "tap-diff": "^0.1.1",
+    "tape": "^4.6.0"
   }
 }

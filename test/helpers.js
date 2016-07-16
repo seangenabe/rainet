@@ -11,7 +11,6 @@ function setup(arrangements) {
   })
   return game
 }
-module.exports.setup = setup
 
 function doMoves(game, moves) {
   return moves.map(move => {
@@ -20,24 +19,27 @@ function doMoves(game, moves) {
     }
     catch (err) {
       console.error(`threw on move: ${Util.inspect(move)}`)
+      console.error(err.stack)
       console.error(game.state.board.grid.toStringDebug())
       throw err
     }
   })
 }
-module.exports.doMoves = doMoves
 
 function doMove(game, move) {
   if (!(move instanceof Move)) {
-    let sourceLocation = parseLocation(move.substr(0, 2))
     move = new OnlineCardMove({
-      source: game.state.board.grid.lookup(sourceLocation),
-      direction: parseDirection(move.substr(2, 1))
+      source: getSquare(game, move.substr(0, 2)),
+      direction: parseDirection(move.substr(2, 1)),
+      direction2: parseDirection(move.substr(3, 1))
     })
   }
   return game.submitMove(move)
 }
-module.exports.doMove = doMove
+
+function getSquare(game, locationString) {
+  return game.state.board.grid.lookup(parseLocation(locationString))
+}
 
 const letters = 'ABCDEFGH'.split('')
 function parseLocation(locationString) { // chess-like location notation
@@ -46,11 +48,20 @@ function parseLocation(locationString) { // chess-like location notation
     8 - Number(locationString.charAt(1))
   )
 }
-module.exports.parseLocation = parseLocation
 
 const directions = new Map(
   [['U', 'up'], ['D', 'down'], ['L', 'left'], ['R', 'right']]
 )
 function parseDirection(directionChar) {
+  if (!directionChar) { return }
   return Direction[directions.get(directionChar)]
+}
+
+module.exports = {
+  setup,
+  doMoves,
+  doMove,
+  getSquare,
+  parseLocation,
+  parseDirection
 }

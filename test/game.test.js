@@ -1,6 +1,4 @@
-'use strict'
-
-const tap = require('tap')
+const t = require('tape')
 const {
   Game,
   Team,
@@ -12,7 +10,7 @@ const {
 } = require('..')
 const { setup, doMoves } = require('./helpers')
 
-tap.test('constructor + start + submitMove', t => {
+t.test('constructor + start + submitMove', t => {
   let game = new Game()
   t.ok(game instanceof Game)
 
@@ -38,7 +36,7 @@ tap.test('constructor + start + submitMove', t => {
   t.end()
 })
 
-tap.test("capture 4 link cards to win", t => {
+t.test("capture 4 link cards to win", t => {
   const game = setup([[0, 0, 0, 4], [3, 1]])
   let movesResult = doMoves(game, [
     'D2U', 'F8D',
@@ -62,7 +60,7 @@ tap.test("capture 4 link cards to win", t => {
   t.end()
 })
 
-tap.test("capture 4 virus cards to lose", t => {
+t.test("capture 4 virus cards to lose", t => {
   const game = setup([[3, 0, 0, 0], [3, 1]])
   let movesResult = doMoves(game, [
     'D2U', 'F8D',

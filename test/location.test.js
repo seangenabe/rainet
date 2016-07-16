@@ -1,6 +1,4 @@
-'use strict'
-
-const tap = require('tap')
+const tap = require('tape')
 const { Location } = require('..')
 
 tap.test('constructor', t => {
@@ -37,10 +35,11 @@ const x = new Location(3, 4)
 
 tap.test('column', t => {
 
-  t.ok(x.column === 3)
+  t.equals(x.column, 3)
 
   t.test('should be read-only', t => {
-    t.throws(function() { x.column = 6 }, TypeError)
+    x.column = 6
+    t.equals(x.column, 3)
     t.end()
   })
 
@@ -50,10 +49,11 @@ tap.test('column', t => {
 
 tap.test('row', t => {
 
-  t.ok(x.row === 4)
+  t.equals(x.row, 4)
 
   t.test('should be read-only', t => {
-    t.throws(function() { x.column = 5 }, TypeError)
+    x.column = 5
+    t.equals(x.row, 4)
     t.end()
   })
 

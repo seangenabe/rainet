@@ -9,7 +9,7 @@ const TerminalCardType = require('./terminal-card-type')
  * @class TerminalCardMove
  * @param {object} opts
  * @param {Symbol} opts.team Passed to {@link Move|Move constructor}
- * @param {Square} opts.square Passed to {@link SquareMove|SquareMove constructor}
+ * @param {Square} opts.source Passed to {@link SquareMove|SquareMove constructor}
  */
 module.exports = class TerminalCardMove extends SquareMove {
 

@@ -1,6 +1,4 @@
-'use strict'
-
-const t = require('tap')
+const t = require('tape')
 const {
   Direction,
   StackCause,
@@ -15,8 +13,11 @@ let enums = [
   [TerminalCardType, ['lineBoost', 'firewall', 'notFound', 'virusCheck']]
 ]
 
-for (let [enumType, keys] of enums) {
-  for (let key of keys) {
-    t.equals(enumType[enumType[key]], key)
+t.test('enums', t => {
+  for (let [enumType, keys] of enums) {
+    for (let key of keys) {
+      t.equals(enumType[enumType[key]], key)
+    }
   }
-}
+  t.end()
+})

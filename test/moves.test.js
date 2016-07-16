@@ -1,13 +1,10 @@
-'use strict'
-
-const tap = require('tap')
+const t = require('tape')
 const {
   SurrenderMove,
-  OnlineCardMove,
   Team
 } = require('..')
 
-tap.test('Move', t => {
+t.test('Move', t => {
 
   t.test('constructor', t => {
     let tests = [

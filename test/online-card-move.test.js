@@ -1,6 +1,4 @@
-'use strict'
-
-const tap = require('tap')
+const t = require('tape')
 const {
   OnlineCardMove,
   Team,
@@ -9,7 +7,7 @@ const {
   Direction
 } = require('..')
 
-tap.test('constructor', t => {
+t.test('constructor', t => {
 
   t.test('should be constructed ok without direction2', t => {
     let sq = new Square(new Location(6, 3))

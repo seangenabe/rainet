@@ -8,7 +8,6 @@ const typecheck = require('./typecheck')
  * @classdesc Represents a game move. Move objects should be considered immutable.
  * @param {object} opts
  * @param {Symbol} opts.team {@link Team} The team who made this move.
-
  */
 module.exports = class Move {
 

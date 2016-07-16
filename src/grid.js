@@ -18,7 +18,7 @@ module.exports = class Grid {
     this._rows = rows
     this._columns = columns
 
-    for (var i = 0; i < 8; i++) {
+    for (let i = 0; i < 8; i++) {
       rows.push(new Array(8))
       columns.push(new Array(8))
     }
