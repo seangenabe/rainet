@@ -17,6 +17,6 @@ let enums = [
 
 for (let [enumType, keys] of enums) {
   for (let key of keys) {
-    t.ok(enumType[enumType[key]] === key)
+    t.equals(enumType[enumType[key]], key)
   }
 }

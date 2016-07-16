@@ -4,7 +4,8 @@
   "description": "A JavaScript implementation of 5pb.'s game RaiNet Access Battlers.",
   "main": "src",
   "scripts": {
-    "test": "tap test/*.js",
+    "test": "tap test/*.test.js",
+    "test:watch": "chokidar --command \"npm test\" test",
     "jsdoc": "jsdoc -c .jsdoc.json --readme readme.md --destination docs src",
     "jsdoc:watch": "chokidar --command \"npm run jsdoc\" src"
   },

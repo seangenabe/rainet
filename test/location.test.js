@@ -40,7 +40,7 @@ tap.test('column', t => {
   t.ok(x.column === 3)
 
   t.test('should be read-only', t => {
-    t.throws(() => x.column = 6, TypeError)
+    t.throws(function() { x.column = 6 }, TypeError)
     t.end()
   })
 
@@ -53,7 +53,7 @@ tap.test('row', t => {
   t.ok(x.row === 4)
 
   t.test('should be read-only', t => {
-    t.throws(() => x.column = 5, TypeError)
+    t.throws(function() { x.column = 5 }, TypeError)
     t.end()
   })
 

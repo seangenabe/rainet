@@ -8,7 +8,7 @@ const Square = require('./square')
  * @classdesc Represents a move involving a board square.
  * @param {object} opts
  * @param {Symbol} opts.team Passed to {@link Move|Move constructor}
- * @param {Square} [opts.square] The square on which this move is operated upon.
+ * @param {Square} [opts.source] The square on which this move is operated upon.
  */
 module.exports = class SquareMove extends Move {
 

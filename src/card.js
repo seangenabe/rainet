@@ -1,7 +1,10 @@
-'use strict'
-
 const OnlineCardType = require('./online-card-type')
 const Team = require('./team')
+const typeCheck = require('./typecheck')
+
+const a1 = typeCheck().object
+const a2 = typeCheck().enum(OnlineCardType, 'OnlineCardType')
+const a3 = typeCheck().enum(Team, 'Team')
 
 /**
  * Represents an online card.
@@ -25,23 +28,16 @@ module.exports = class Card {
    */
 
   constructor(opts) {
-    if (typeof opts !== 'object') {
-      throw new TypeError("opts must be an object")
-    }
+    a1.assert(opts, 'opts')
     const { type, owner } = opts
-
-    if (!OnlineCardType.hasValue(type)) {
-      throw new TypeError("opts.type must be a member of OnlineCardType")
-    }
-    if (!Team.hasValue(owner)) {
-      throw new TypeError("opts.owner must be a member of Team")
-    }
+    a2.assert(type, 'opts.type')
+    a3.assert(owner, 'opts.owner')
 
     this._type = type
     this._owner = owner
     this._revealed = false
     this._lineBoosted = false
-    
+
     Object.seal(this)
   }
 
@@ -74,7 +70,7 @@ module.exports = class Card {
     return this._revealed
   }
   set revealed(value) {
-    this._revealed = !!value
+    this._revealed = Boolean(value)
   }
 
   /**
@@ -86,7 +82,7 @@ module.exports = class Card {
     return this._lineBoosted
   }
   set lineBoosted(value) {
-    this._lineBoosted = !!value
+    this._lineBoosted = Boolean(value)
   }
 
   /**
@@ -109,9 +105,7 @@ module.exports = class Card {
       }
       return Card._generateOnlineCardsOfTypeForTeam(owner, type)
     }
-    else {
-      return Card._generateOnlineCardsForTeam(owner)
-    }
+    return Card._generateOnlineCardsForTeam(owner)
   }
 
   /**
@@ -142,8 +136,8 @@ module.exports = class Card {
   static *_generateOnlineCardsOfTypeForTeam(owner, type) {
     for (let i = 0; i < 4; i++) {
       yield new Card({
-        type: type,
-        owner: owner
+        type,
+        owner
       })
     }
   }

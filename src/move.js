@@ -1,6 +1,7 @@
 'use strict'
 
 const Team = require('./team')
+const typecheck = require('./typecheck')
 
 /**
  * @class Move
@@ -12,14 +13,9 @@ const Team = require('./team')
 module.exports = class Move {
 
   constructor(opts) {
-
-    if (typeof opts !== 'object') {
-      throw new TypeError("opts must be an object")
-    }
+    typecheck('object', opts, 'opts')
     let { team } = opts
-    if (typeof Team[team] !== 'string') {
-      throw new TypeError("opts.team must be a member of Team")
-    }
+    typecheck(Team, team, 'opts.team')
 
     this._team = team
   }

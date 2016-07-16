@@ -1,12 +1,14 @@
-'use strict'
-
 const Direction = require('./direction')
+const typeCheck = require('./typecheck')
+
+const a1 = typeCheck().nullable.integer.between(-1, 8)
 
 // Location objects are immutable.
 /**
  * Initializes a new instance of Location.
  * @class Location
- * @classdesc A two-dimensional representation of a location on the main game board.
+ * @classdesc A two-dimensional representation of a location on the main game
+ * board.
  * @param {?number} column The zero-based indexed column from the left.
  * @param {?number} row The zero-based indexed row from the top.
  * @throws {TypeError}
@@ -14,8 +16,8 @@ const Direction = require('./direction')
 class Location {
 
   constructor(column, row) {
-    assertNullableNumber(column, 'column')
-    assertNullableNumber(row, 'row')
+    a1.assert(column, 'column')
+    a1.assert(row, 'row')
 
     this._column = column
     this._row = row
@@ -159,19 +161,6 @@ function numberDevouringAdder(...n) {
     ret += num
   }
   return ret
-}
-
-/**
- * Checks if x is a number or null.
- * @function assertNullableNumber
- * @access private
- * @param {?number} x
- * @param {string} name The name of the variable.
- */
-function assertNullableNumber(x, name) {
-  if (!(x == null || Number.isFinite(x))) {
-    throw new TypeError(`${name} must be a nullable number`)
-  }
 }
 
 module.exports = Location

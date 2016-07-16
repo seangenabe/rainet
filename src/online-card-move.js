@@ -1,15 +1,16 @@
-'use strict'
-
 const Direction = require('./direction')
 const SquareMove = require('./square-move')
+const typeCheck = require('./typecheck')
 
+const assertd1 = typeCheck().enum(Direction, 'Direction')
+const assertd2 = typeCheck().nullable.enum(Direction, 'Direction')
 /**
  * Initializes a new instance of `OnlineCardMove`.
  * @class OnlineCardMove
  * @classdesc A move involving an online card.
  * @param {Object} opts
  * @param {Symbol} opts.team Passed to {@link Move|Move constructor}
- * @param {Square} opts.square Passed to {@link SquareMove|SquareMove constructor}
+ * @param {Square} opts.source Passed to {@link SquareMove|SquareMove constructor}
  * @param {Symbol} opts.direction Direction
  * @param {Symbol} [opts.direction2] Direction
  * @param {boolean} [opts.revealCard] Whether to reveal the card, if a server move. Defaults to `false`.
@@ -17,19 +18,21 @@ const SquareMove = require('./square-move')
 module.exports = class OnlineCardMove extends SquareMove {
 
   constructor(opts) {
+    opts = opts || {}
+    if (!opts.team && opts.source && opts.source.card) {
+      opts.team = opts.source.card.owner
+    }
     super(opts)
 
     let { direction, direction2, revealCard } = opts
-
-    if (!Direction.hasValue(direction)) {
-      throw new TypeError("opts.direction must be a member of Direction")
-    }
+    assertd1.assert(direction, 'opts.direction')
+    assertd2.assert(direction2, 'opts.direction2')
     if (!(direction2 == null || Direction.hasValue(direction2))) {
       throw new TypeError(
         "opts.direction2 must be a nullable member of Direction"
       )
     }
-    revealCard = !!revealCard
+    revealCard = Boolean(revealCard)
 
     this._direction = direction
     this._direction2 = direction2

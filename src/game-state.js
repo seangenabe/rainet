@@ -72,7 +72,7 @@ module.exports = class GameState {
     let { arrangement, startingTeam } = opts
 
     if (!(arrangement instanceof Map)) {
-      throw new TypeError("opts.arrangement must be a Map")
+      arrangement = new Map(arrangement)
     }
     if (!(startingTeam == null || Team.hasValue(startingTeam) === 'string')) {
       throw new TypeError("opts.startingPlayer must be a member of Team")

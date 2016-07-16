@@ -48,7 +48,7 @@ module.exports = class Game {
    * @memberof Game.prototype
    * @param {object} startArgs Passed to {@link GameState#initialize}
    * @param {Symbol} startArgs.startingTeam
-   * @param {Object.<Symbol, Array<number>>} startArgs.arrangement
+   * @param {Map} startArgs.arrangement
    */
   start(startArgs) {
     this.state.initialize(startArgs)
@@ -97,16 +97,15 @@ module.exports = class Game {
     if (nullTeamFlag) {
       team = move.team
     }
-    else {
-      // Verify submitted move player.
-      if (team !== move.team) {
-        throw new InvalidMoveError("It is not the turn of the player of the specified move.")
-      }
+    // Verify submitted move player.
+    else if (team !== move.team) {
+      throw new InvalidMoveError(
+        "It is not the turn of the player of the specified move.")
     }
 
     let terminalCardState_team = terminalCardState.get(team)
     let currentSquare = move.source // can be null when move.uninstall === true
-    let card = currentSquare ? currentSquare.card : null;
+    let card = currentSquare ? currentSquare.card : null
 
     // Check if the card moved is an online card.
     if (move instanceof OnlineCardMove) {
@@ -126,7 +125,8 @@ module.exports = class Game {
         // (Which is an invalid move since the first submove ended
         // but the player attempts to make a second one.)
         if (submove1.stop) {
-          throw new InvalidMoveError("Cannot do second move due to the first move having ended.")
+          throw new InvalidMoveError(
+            "Cannot do second move due to the first move having ended.")
         }
 
         // Check if we can move the card a second time.
@@ -159,7 +159,8 @@ module.exports = class Game {
         //  and uninstallation using an XOR (!=))
         let isInstalled = Boolean(terminalCardState_team.get(move.cardType))
         if (move.uninstall !== isInstalled) {
-          throw new InvalidMoveError("Terminal card is already installed / uninstalled.")
+          throw new InvalidMoveError(
+            "Terminal card is already installed / uninstalled.")
         }
 
         // Check if the card moved is a Line Boost card.
@@ -276,7 +277,8 @@ module.exports = class Game {
 
           // Check if the card is owned by the enemy team.
           if (card == null || card.owner === team) {
-            throw new InvalidMoveError("Invalid target square for Virus Checker.")
+            throw new InvalidMoveError(
+              "Invalid target square for Virus Checker.")
           }
 
           // Reveal the card.
@@ -352,7 +354,9 @@ module.exports = class Game {
 
     // Check if the square is not outside the board.
     if (destinationSquare == null) {
-      throw new InvalidMoveError("Invalid destination square. Check if the card is moved outside the board.")
+      throw new InvalidMoveError(
+        "Invalid destination square. Check if the card is moved outside the board."
+      )
     }
 
     // Check if the card is moving toward an enemy firewall.
@@ -365,7 +369,7 @@ module.exports = class Game {
 
     // Check if the card is moving towards own server area.
     if (destinationSquare === this.state.board.server.get(team)) {
-      throw new InvalidMoveError('Cannot move to own server area.');
+      throw new InvalidMoveError('Cannot move to own server area.')
     }
 
     // Check if the card is moving towards the enemy server area.
@@ -386,7 +390,8 @@ module.exports = class Game {
 
       // Check if player owns card in the destination.
       if (destinationSquare.card.owner === team) {
-        throw new InvalidMoveError("Cannot move to a square occupied by player's own card.")
+        throw new InvalidMoveError(
+          "Cannot move to a square occupied by player's own card.")
       }
 
       return {
@@ -501,7 +506,8 @@ module.exports = class Game {
     return ret
   }
 
-  // This is a core method; verifications about the current game state should be made beforehand.
+  // This is a core method; verifications about the current game state should be
+  // made beforehand.
   /**
    * Uninstall the player's line boost card.
    * @function _uninstallLineBoostCore
@@ -517,7 +523,8 @@ module.exports = class Game {
   }
 
   /**
-   * Throws an exception if the board square does not have a card owned by the player.
+   * Throws an exception if the board square does not have a card owned by the
+   * player.
    * @function _requireTeamCardOnSquare
    * @memberof Game.prototype
    * @access private
@@ -534,7 +541,8 @@ module.exports = class Game {
         throw new InvalidMoveError("There is no card on that square.")
       }
       if (square.card.owner !== team) {
-        throw new InvalidMoveError("The player does not own an online card on that square.")
+        throw new InvalidMoveError(
+          "The player does not own an online card on that square.")
       }
     }
     catch (err) {
@@ -558,13 +566,14 @@ module.exports = class Game {
  * @property {Symbol} owner {@link Team}
  * @property {StackedOnlineCard} stacked
  */
-          /**
-           * @typedef ExecutedMoveToSquareData
-           * @property {?TerminalMoveData[]} terminal
-           * @property {?StackAreaDelta[]} deltaStackArea
-           * @property {?Symbol} server {@link Team}
-           * @property {?CaptureData} capture
-           */
+
+/**
+ * @typedef ExecutedMoveToSquareData
+ * @property {?TerminalMoveData[]} terminal
+ * @property {?StackAreaDelta[]} deltaStackArea
+ * @property {?Symbol} server {@link Team}
+ * @property {?CaptureData} capture
+ */
 
 /**
  * @typedef ExecutedSubmoveTerminalCardData
@@ -591,9 +600,6 @@ module.exports = class Game {
  * @property {?object} server
  *
  * @property {Team}  server.serverTeam  The team of the invaded server.
- * @property {?object}  capture
- * @property {Team}  capture.subject  The team capturing the card.
- * @property {OnlineCardType}  capture.type  The type of the captured card.
  */
 
 /**
