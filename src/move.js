@@ -1,7 +1,7 @@
-'use strict'
-
 const Team = require('./team')
 const typecheck = require('./typecheck')
+const a1 = typecheck().object
+const a2 = typecheck().enum(Team, 'Team')
 
 /**
  * @class Move
@@ -12,9 +12,9 @@ const typecheck = require('./typecheck')
 module.exports = class Move {
 
   constructor(opts) {
-    typecheck('object', opts, 'opts')
+    a1.assert(opts, 'opts')
     let { team } = opts
-    typecheck(Team, team, 'opts.team')
+    a2.assert(team, 'opts.team')
 
     this._team = team
   }

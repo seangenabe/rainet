@@ -5,7 +5,7 @@
   "main": "src",
   "scripts": {
     "test:tap": "tape test/*.test.js",
-    "test": "tape test/line-boost.test.js | tap-diff",
+    "test": "tape test/*.test.js | tap-diff",
     "test:watch": "chokidar --command \"npm test\" test",
     "jsdoc": "jsdoc -c .jsdoc.json --readme readme.md --destination docs src",
     "jsdoc:watch": "chokidar --command \"npm run jsdoc\" src"
@@ -13,7 +13,7 @@
   "author": "Sean Genabe <seangenabe@outlook.com>",
   "license": "MIT",
   "engines": {
-    "node": ">=6",
+    "node": ">=4",
     "npm": ">=2"
   },
   "dependencies": {

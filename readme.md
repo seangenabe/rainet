@@ -31,7 +31,7 @@ To start the game, pass an object to `game.start()`:
 
 #### Arrangement array format
 
-The arrangement array is an array of numbers which is simply the number of link cards to put before each virus card.
+The arrangement array is an array of numbers which is simply the number of link cards to put before each virus card. *The order of starting squares for both teams is from left to right with respect to Team.bottom.*
 
 Examples:
 * LVLVLVLV = [1, 1, 1, 1]
@@ -161,6 +161,37 @@ game.state.board.grid.columns[5][6].card.revealed // false
 ```javascript
 game.submitMove(new SurrenderMove({ team: Team.bottom }))
 ```
+
+### Modules
+
+The exported modules for this package are:
+```javascript
+const {
+  Board,
+  Card,
+  Direction,
+  GameState,
+  Game,
+  getEnemyTeam,
+  Grid,
+  InstallableTerminalCardMove,
+  InvalidMoveError,
+  Location,
+  Move,
+  NotFoundTerminalCardMove,
+  OnlineCardMove,
+  OnlineCardType,
+  SquareMove,
+  StackCause,
+  StackedOnlineCard,
+  SurrenderMove,
+  Team,
+  TerminalCardMove,
+  TerminalCardType
+} = require('rainet')
+```
+
+These modules can also be accessed in the `src` directory. (This might change in the future, in a major semver revision. `dist`, perhaps?)
 
 ### Wrap-up
 

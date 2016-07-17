@@ -1,4 +1,3 @@
-
 const makeError = require('make-error')
 
 /**

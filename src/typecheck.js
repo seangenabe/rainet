@@ -52,17 +52,19 @@ class TypeCheck {
     return this
   }
 
-  assert(value) {
-    let message
+  assert(value, desc) {
     if (this._nullable) {
       if (value == null) { return }
     }
     for (let assertion of this._assertions) {
       if (!assertion.fn(value)) {
-        throw new TypeError(`${assertion.message} Actual: ${Util.inspect(value)}`)
+        throw new TypeError(
+          `${assertion.message} Description: ${desc}; got ${Util.inspect(value)}`
+        )
       }
     }
   }
+
 }
 
 module.exports = () => new TypeCheck()

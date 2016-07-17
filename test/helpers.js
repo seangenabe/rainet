@@ -1,4 +1,14 @@
-const { Move, OnlineCardMove, Direction, Game, Team, Location } = require('..')
+const {
+  Move,
+  OnlineCardMove,
+  Direction,
+  Game,
+  Team,
+  Location,
+  InstallableTerminalCardMove,
+  TerminalCardType
+} = require('..')
+const partial = require('lodash.partial')
 const Util = require('util')
 
 function setup(arrangements) {
@@ -57,11 +67,44 @@ function parseDirection(directionChar) {
   return Direction[directions.get(directionChar)]
 }
 
-module.exports = {
-  setup,
-  doMoves,
-  doMove,
-  getSquare,
-  parseLocation,
-  parseDirection
+function install(game, type, team, locationString) {
+  return doMove(game, new InstallableTerminalCardMove({
+    source: locationString && getSquare(game, locationString),
+    cardType: TerminalCardType[type],
+    team: team && Team[team]
+  }))
 }
+
+function uninstall(game, type, team) {
+  return doMove(game, new InstallableTerminalCardMove({
+    team: Team[team],
+    cardType: TerminalCardType[type],
+    uninstall: true
+  }))
+}
+
+function getInstallSquare(game, type, team) {
+  return game.state.terminalCardState.get(Team[team])
+    .get(TerminalCardType[type])
+}
+
+module.exports = function(game) {
+  let obj = {
+    doMoves,
+    doMove,
+    getSquare,
+    parseLocation,
+    parseDirection,
+    install,
+    uninstall,
+    getInstallSquare
+  }
+  for (let key of Object.keys(obj)) {
+    obj[key] = partial(obj[key], game)
+  }
+  return obj
+}
+
+Object.assign(module.exports, {
+  setup
+})
