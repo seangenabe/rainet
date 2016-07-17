@@ -1,5 +1,3 @@
-'use strict'
-
 const assign = require('lodash.assign')
 const GameState = require('./game-state')
 const getEnemyTeam = require('./get-enemy-team')

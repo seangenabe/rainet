@@ -1,5 +1,3 @@
-'use strict'
-
 const Board = require('./board')
 const Card = require('./card')
 const getEnemyTeam = require('./get-enemy-team')

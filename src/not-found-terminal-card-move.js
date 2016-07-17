@@ -1,5 +1,3 @@
-'use strict'
-
 const TerminalCardMove = require('./terminal-card-move')
 const TerminalCardType = require('./terminal-card-type')
 const Square = require('./square')

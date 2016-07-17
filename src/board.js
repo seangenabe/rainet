@@ -1,5 +1,3 @@
-'use strict'
-
 const Direction = require('./direction')
 const Grid = require('./grid')
 const Location = require('./location')

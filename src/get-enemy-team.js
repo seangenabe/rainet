@@ -1,5 +1,3 @@
-'use strict'
-
 const Team = require('./team')
 
 const lookup = new Map(

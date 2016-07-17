@@ -1,5 +1,3 @@
-'use strict'
-
 const Move = require('./move')
 
 /**
@@ -10,10 +8,4 @@ const Move = require('./move')
  * @param {Symbol} opts.team Passed to {@link Move|Move constructor}
  * @extends Move
  */
-module.exports = class SurrenderMove extends Move {
-
-  constructor(opts) {
-    super(opts)
-  }
-
-}
+module.exports = class SurrenderMove extends Move {}

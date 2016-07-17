@@ -13,7 +13,7 @@
   "author": "Sean Genabe <seangenabe@outlook.com>",
   "license": "MIT",
   "engines": {
-    "node": ">=4",
+    "node": ">=6",
     "npm": ">=2"
   },
   "dependencies": {
