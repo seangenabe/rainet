@@ -8,10 +8,12 @@ const {
   Direction,
   Square
 } = require('..')
-const { setup, doMoves } = require('./helpers')
+const helpers = require('./helpers')
+const { setup } = helpers
 
 t.test('constructor + start + submitMove', t => {
   let game = new Game()
+
   t.ok(game instanceof Game)
 
   let arrangement = new Map([
@@ -38,7 +40,8 @@ t.test('constructor + start + submitMove', t => {
 
 t.test("capture 4 link cards to win", t => {
   const game = setup([[0, 0, 0, 4], [3, 1]])
-  let movesResult = doMoves(game, [
+  const { doMoves } = helpers(game)
+  let movesResult = doMoves([
     'D2U', 'F8D',
     'D3U', 'G8D',
     'D4U', 'H8D',
@@ -62,7 +65,8 @@ t.test("capture 4 link cards to win", t => {
 
 t.test("capture 4 virus cards to lose", t => {
   const game = setup([[3, 0, 0, 0], [3, 1]])
-  let movesResult = doMoves(game, [
+  const { doMoves } = helpers(game)
+  let movesResult = doMoves([
     'D2U', 'F8D',
     'D3U', 'G8D',
     'D4U', 'H8D',
