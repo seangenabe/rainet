@@ -230,7 +230,7 @@ module.exports = class Game {
         if (move.cardType === TerminalCardType.notFound) {
 
           // Check if the card is not consumed.
-          if (terminalCardState.get(team).get(TerminalCardType.notFound)) {
+          if (terminalCardState_team.get(TerminalCardType.notFound)) {
             throw new InvalidMoveError("404 Not Found card already consumed.")
           }
 
@@ -245,18 +245,22 @@ module.exports = class Game {
             // Swap the cards.
             currentSquare.card = other.card
             other.card = card
-            let lineBoostSwap = function lineBoostSwap(c1, c2) {
 
-              if (c1.lineBoosted) {
-                c2.lineBoosted = true
-                c1.lineBoosted = false
-              }
+            // Swap line boost.
+            if (card.lineBoosted) {
+              card.lineBoosted = false
+              otherCard.lineBoosted = true
             }
-            lineBoostSwap(card, otherCard)
-            lineBoostSwap(otherCard, card)
-            card.revealed = false
-            otherCard.revealed = false
+            else if (otherCard.lineBoosted) {
+              card.lineBoosted = true
+              otherCard.lineBoosted = false
+            }
           }
+
+          card.revealed = false
+          otherCard.revealed = false
+
+          terminalCardState_team.set(TerminalCardType.notFound, true)
         }
         else {
 
