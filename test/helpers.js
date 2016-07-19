@@ -67,12 +67,16 @@ function parseDirection(directionChar) {
   return Direction[directions.get(directionChar)]
 }
 
-function install(game, type, team, locationString) {
-  return doMove(game, new InstallableTerminalCardMove({
+function installer(game, type, team, locationString) {
+  return new InstallableTerminalCardMove({
     source: locationString && getSquare(game, locationString),
     cardType: TerminalCardType[type],
     team: team && Team[team]
-  }))
+  })
+}
+
+function install(game, type, team, locationString) {
+  return doMove(game, installer(game, type, team, locationString))
 }
 
 function uninstall(game, type, team) {
@@ -96,6 +100,7 @@ module.exports = function(game) {
     parseLocation,
     parseDirection,
     install,
+    installer,
     uninstall,
     getInstallSquare
   }

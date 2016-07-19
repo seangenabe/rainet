@@ -10,6 +10,7 @@ const {
 } = require('..')
 const helpers = require('./helpers')
 const { setup } = helpers
+const partial = require('lodash.partial')
 
 t.test('constructor + start + submitMove', t => {
   let game = new Game()
@@ -79,5 +80,38 @@ t.test("capture 4 virus cards to lose", t => {
   let lastMoveData = movesResult[movesResult.length - 1]
   t.equals(lastMoveData.winner, Team.top)
   t.equals(game.state.winner, Team.top)
+  t.end()
+})
+
+t.test("infiltrate enemy with 4 link cards to win", t => {
+  const game = setup([[], [0, 0, 4]])
+  let { doMoves, installer } = helpers(game)
+  installer = partial(installer, 'lineBoost', 'bottom')
+
+  doMoves([
+    installer('C1'), 'C8D',
+    'C1UU', 'C7L',
+    'C3UU', 'E7R',
+    'C5UU', 'F7R',
+    'C7UR', 'D7L',
+    'D8U', 'B7L',
+    installer('F1'), 'C7L',
+    'F1UU', 'G7R',
+    'F3UU', 'H7L',
+    'F5UU', 'G7R',
+    'F7LU', 'H7L',
+    'E8U', 'G7R',
+    installer('D2'), 'H7L',
+    'D2UU', 'G7R',
+    'D4UU', 'H7L',
+    'D6UU', 'G7R',
+    'D8U', 'H7L',
+    installer('E2'), 'G7R',
+    'E2UU', 'H7L',
+    'E4UU', 'G7R',
+    'E6UU', 'H7L',
+    'E8U'
+  ])
+  t.equals(game.state.winner, Team.bottom)
   t.end()
 })

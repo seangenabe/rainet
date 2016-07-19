@@ -102,7 +102,7 @@ module.exports = class Board {
    */
   _setServerAdjacent(row, col, direction, team) {
     this._grid.columns[col][row]
-      .adjacentSquares[direction] = this._server[team]
+      .adjacentSquares.set(direction, this._server.get(team))
   }
 
 }
