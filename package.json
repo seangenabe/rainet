@@ -4,6 +4,8 @@
   "description": "A JavaScript implementation of 5pb.'s game RaiNet Access Battlers.",
   "main": "src",
   "scripts": {
+    "travis": "npm run test:cov && nyc report --reporter=text-lcov | coveralls",
+    "test:cov": "nyc tape test/*.test.js",
     "test:tap": "tape test/*.test.js",
     "test": "tape test/*.test.js | tap-diff",
     "test:watch": "chokidar --command \"npm test\" test",
@@ -23,8 +25,10 @@
   },
   "devDependencies": {
     "chokidar-cli": "^1.1.1",
+    "coveralls": "^2.11.11",
     "jsdoc": "^3.4.0",
     "lodash.partial": "^4.1.4",
+    "nyc": "^7.0.0",
     "tap-diff": "^0.1.1",
     "tape": "^4.6.0",
     "tape-catch": "^1.0.6"

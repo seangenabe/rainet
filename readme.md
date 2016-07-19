@@ -4,6 +4,7 @@ RaiNet Access Battlers Javascript implementation
 
 [![npm](https://img.shields.io/npm/v/rainet.svg?style=flat-square)](https://www.npmjs.com/package/rainet)
 [![Build Status](https://img.shields.io/travis/seangenabe/rainet/master.svg?style=flat-square)](https://travis-ci.org/seangenabe/rainet)
+[![Coverage Status](https://img.shields.io/coveralls/seangenabe/rainet/master.svg?style=flat-square)](https://coveralls.io/github/seangenabe/rainet?branch=master)
 [![Dependency Status](https://img.shields.io/david/seangenabe/rainet.svg?style=flat-square)](https://david-dm.org/seangenabe/rainet)
 [![devDependency Status](https://img.shields.io/david/dev/seangenabe/rainet.svg?style=flat-square)](https://david-dm.org/seangenabe/rainet#info=devDependencies)
 [![node](https://img.shields.io/node/v/rainet.svg?style=flat-square)](https://nodejs.org/en/download/)
