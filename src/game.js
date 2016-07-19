@@ -269,14 +269,15 @@ module.exports = class Game {
         if (move.cardType === TerminalCardType.virusCheck) {
 
           // Check if the card is not consumed.
-          if (terminalCardState.get(team).has(TerminalCardType.virusCheck)) {
+          if (terminalCardState.get(team).get(TerminalCardType.virusCheck)) {
             throw new InvalidMoveError("Virus Checker already consumed.")
           }
 
           // Check if the card is owned by the enemy team.
           if (card == null || card.owner === team) {
             throw new InvalidMoveError(
-              "Invalid target square for Virus Checker.")
+              "Invalid target square for Virus Checker. There must be an enemy card on the square."
+            )
           }
 
           // Reveal the card.

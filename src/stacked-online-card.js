@@ -1,7 +1,8 @@
-'use strict'
-
 const StackCause = require('./stack-cause')
 const Card = require('./card')
+const typecheck = require('./typecheck')
+const a1 = typecheck().instanceof(Card)
+const a2 = typecheck().enum(StackCause)
 
 // StackedOnlineCard objects are immutable.
 /**
@@ -9,18 +10,14 @@ const Card = require('./card')
  * @class StackedOnlineCard
  * @classdesc Represents an Online Card in the stack area.
  * @param {Card} card The online card.
- * @param {Symbol} cause {@link StackCause} How the online card got in the stack area.
+ * @param {Symbol} cause {@link StackCause} How the online card got in the stack
+ * area.
  */
 module.exports = class StackedOnlineCard {
 
   constructor(card, cause) {
-
-    if (!(card instanceof Card)) {
-      throw new TypeError("card must be a Card")
-    }
-    if (!StackCause.hasValue(cause)) {
-      throw new TypeError("cause must be a member of StackCause")
-    }
+    a1.assert(card, 'card')
+    a2.assert(cause, 'cause')
 
     this._card = card
     this._cause = cause

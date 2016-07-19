@@ -1,5 +1,7 @@
 const Move = require('./move')
 const Square = require('./square')
+const typecheck = require('./typecheck')
+const a1 = typecheck().nullable.instanceof(Square)
 
 /**
  * @class SquareMove
@@ -12,11 +14,14 @@ module.exports = class SquareMove extends Move {
 
   constructor(opts) {
     super(opts)
-    let { source } = opts
-    if (!(source == null || source instanceof Square)) {
-      throw new TypeError("opts.source must be a Square")
-    }
-    this._source = source
+    this._source = opts.source
+  }
+
+  _preAssert(opts) {
+    super._preAssert(opts)
+    // Order opts.source before opts.team so we can do automatic assigning of
+    // opts.team using the source.
+    this._asserts.unshift('opts.source', () => a1.assert(opts.source))
   }
 
   /**

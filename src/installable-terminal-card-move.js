@@ -14,12 +14,22 @@ const TerminalCardMove = require('./terminal-card-move')
 module.exports = class InstallableTerminalCardMove extends TerminalCardMove {
 
   constructor(opts) {
-    if (!opts.team && opts.source && opts.source.card) {
-      opts.team = opts.source.card.owner
-    }
     super(opts)
 
     this._uninstall = Boolean(opts.uninstall)
+  }
+
+  _preAssert(opts) {
+    super._preAssert(opts)
+    this._asserts.insertAfter(
+      'opts.source',
+      Symbol(),
+      () => {
+        if (!opts.team && opts.source.card) {
+          opts.team = opts.source.card.owner
+        }
+      }
+    )
   }
 
   /**

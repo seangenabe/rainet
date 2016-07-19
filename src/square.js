@@ -1,5 +1,3 @@
-'use strict'
-
 const Card = require('./card')
 const Location = require('./location')
 const Team = require('./team')
