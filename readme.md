@@ -1,5 +1,7 @@
 # rainet
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/seangenabe/rainet.svg)](https://greenkeeper.io/)
+
 RaiNet Access Battlers Javascript implementation
 
 [![npm](https://img.shields.io/npm/v/rainet.svg?style=flat-square)](https://www.npmjs.com/package/rainet)
