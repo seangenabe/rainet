@@ -26,7 +26,7 @@
   "devDependencies": {
     "chokidar-cli": "^1.1.1",
     "coveralls": "^2.11.11",
-    "jsdoc": "^3.4.0",
+    "jsdoc": "^3.5.5",
     "lodash.partial": "^4.1.4",
     "nyc": "^11.0.0",
     "tap-diff": "^0.1.1",
